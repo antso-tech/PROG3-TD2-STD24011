@@ -1,6 +1,6 @@
 
 CREATE TYPE dish_category as ENUM ('VEGETABLE', 'ANIMAL', 'MARINE', 'DAILY', 'OTHER');
-CREATE TYPE dish_type as Enum ('START', 'MAIN', 'DESSERT');
+CREATE TYPE dish_type as Enum ('STARTER', 'MAIN', 'DESSERT');
 
 CREATE TABLE DISH (
     id_dish int PRIMARY KEY,
@@ -18,3 +18,4 @@ CREATE TABLE INGREDIENT (
     CONSTRAINT fk_dish FOREIGN KEY (id_dish) REFERENCES DISH(id_dish) 
 
 );
+
