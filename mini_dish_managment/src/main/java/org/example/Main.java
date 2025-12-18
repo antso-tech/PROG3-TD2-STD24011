@@ -7,7 +7,7 @@ public class Main {
         DBConnection dbConnection = new DBConnection();
         DataRetriever data = new DataRetriever();
         dbConnection.getConnection();
-        data.findDishById();
+        data.findDishById(2);
         dbConnection.closeConnection();
 
     }

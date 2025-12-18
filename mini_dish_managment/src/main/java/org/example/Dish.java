@@ -38,6 +38,24 @@ public class Dish {
         return DishType;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDishType(DishtypeEnum dishType) {
+        DishType = dishType;
+    }
+
+    public void setIngredient(List<Ingredients> ingredient) {
+        this.ingredient = ingredient;
+    }
+
+
+
     @Override
     public String toString() {
         return "Dish{" +
