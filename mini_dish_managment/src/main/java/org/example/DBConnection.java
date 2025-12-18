@@ -1,6 +1,8 @@
 package org.example;
 
 
+import org.w3c.dom.ls.LSOutput;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -12,7 +14,7 @@ public class DBConnection {
             String url = System.getenv("DB_URL");
             String user = System.getenv("DB_USER");
             String password = System.getenv("DB_PASSWORD");
-            return DriverManager.getConnection("jdbc:postgresql://localhost:5432/mini_dish_db", "mini_dish_db_manager","dish_managment_password");
+            return  DriverManager.getConnection("jdbc:postgresql://localhost:5432/mini_dish_db", "mini_dish_db_manager","dish_managment_password");
 
 
         }catch(SQLException e){

@@ -19,3 +19,6 @@ CREATE TABLE INGREDIENT (
 
 );
 
+SELECT id_dish, name, dish_type from DISH ;
+
+
