@@ -7,7 +7,7 @@ public class Dish {
     private int id;
     private String name;
     private DishtypeEnum DishType;
-    private List<Ingredients> ingredient;
+    private List<Ingredient> ingredient;
 
 
     public String getDishName(){
@@ -50,7 +50,7 @@ public class Dish {
         DishType = dishType;
     }
 
-    public void setIngredient(List<Ingredients> ingredient) {
+    public void setIngredient(List<Ingredient> ingredient) {
         this.ingredient = ingredient;
     }
 
