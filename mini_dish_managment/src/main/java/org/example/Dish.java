@@ -1,16 +1,17 @@
 package org.example;
 
+import java.util.List;
 import java.util.Objects;
 
 public class Dish {
-    private final int id;
-    private final String name;
-    private final DishtypeEnum DishType;
+    private int id;
+    private String name;
+    private DishtypeEnum DishType;
+    private List<Ingredients> ingredient;
 
-    public Dish(int id, String name, DishtypeEnum dishType) {
-        this.id = id;
-        this.name = name;
-        DishType = dishType;
+
+    public String getDishName(){
+        return getName() == null ? null : this.getName();
     }
 
     @Override
