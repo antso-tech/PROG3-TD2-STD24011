@@ -5,6 +5,10 @@ package org.example;
 public class Main {
     public static void main(String[] args) {
         DBConnection dbConnection = new DBConnection();
+        DataRetriever data = new DataRetriever();
         dbConnection.getConnection();
+        data.findDishById();
+        dbConnection.closeConnection();
+
     }
 }

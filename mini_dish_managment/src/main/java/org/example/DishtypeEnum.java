@@ -1,7 +1,7 @@
 package org.example;
 
 public enum DishtypeEnum {
-    START,
+    STARTER,
     NAME,
     DESSERT
 }
