@@ -2,20 +2,12 @@ package org.example;
 
 import java.util.Objects;
 
-public class Ingredients {
-    private final int id;
-    private final String name;
-    private final double price;
-    private final CategoryEnum category;
-    private final Dish dish;
-
-    public Ingredients(int id, String name, double price, CategoryEnum category, Dish dish) {
-        this.id = id;
-        this.name = name;
-        this.price = price;
-        this.category = category;
-        this.dish = dish;
-    }
+public class Ingredient {
+    private int id;
+    private String name;
+    private double price;
+    private CategoryEnum category;
+    private Dish dish;
 
     public int getId() {
         return id;
@@ -37,10 +29,30 @@ public class Ingredients {
         return dish;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public void setCategory(CategoryEnum category) {
+        this.category = category;
+    }
+
+    public void setDish(Dish dish) {
+        this.dish = dish;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        Ingredients that = (Ingredients) o;
+        Ingredient that = (Ingredient) o;
         return id == that.id && Double.compare(price, that.price) == 0 && Objects.equals(name, that.name) && category == that.category && Objects.equals(dish, that.dish);
     }
 

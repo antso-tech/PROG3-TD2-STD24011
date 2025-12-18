@@ -19,6 +19,7 @@ CREATE TABLE INGREDIENT (
 
 );
 
-SELECT id_dish, name, dish_type from DISH ;
+SELECT d.id_dish, d.name, d.dish_type, i.name from DISH d LEFT JOIN INGREDIENT i on i.id_dish = d.id_dish WHERE d.id_dish = 1;
+
 
 
