@@ -29,6 +29,10 @@ public class Ingredient {
         return dish;
     }
 
+    public int getDishById(){
+        return  dish.getId();
+    }
+
     public void setId(int id) {
         this.id = id;
     }
@@ -71,4 +75,6 @@ public class Ingredient {
                 ", dish=" + dish +
                 '}';
     }
+
+
 }

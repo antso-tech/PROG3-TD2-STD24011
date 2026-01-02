@@ -7,8 +7,19 @@ public class Dish {
     private int id;
     private String name;
     private DishtypeEnum DishType;
-    private List<Ingredient> ingredient;
+    private List<Ingredient> ingredients;
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public List<Ingredient> getIngredients() {
+        return ingredients;
+    }
+
+    public void setIngredients(List<Ingredient> ingredients) {
+        this.ingredients = ingredients;
+    }
 
     public String getDishName(){
         return getName() == null ? null : this.getName();
@@ -38,9 +49,6 @@ public class Dish {
         return DishType;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public void setName(String name) {
         this.name = name;
@@ -51,9 +59,13 @@ public class Dish {
     }
 
     public void setIngredient(List<Ingredient> ingredient) {
-        this.ingredient = ingredient;
+            this.ingredients = ingredient;
+
     }
 
+    public List<Ingredient> getIngredient() {
+        return ingredients;
+    }
 
 
     @Override
@@ -62,6 +74,8 @@ public class Dish {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", DishType=" + DishType +
+                ", Ingredients=" + ingredients.stream().map(Ingredient::getName).toList() +
                 '}';
     }
+
 }
