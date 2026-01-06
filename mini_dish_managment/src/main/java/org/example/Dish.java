@@ -10,8 +10,6 @@ public class Dish {
     private DishtypeEnum DishType;
     private List<Ingredient> ingredients = new ArrayList<>();
 
-
-
     public void setId(int id) {
         this.id = id;
     }
@@ -42,6 +40,16 @@ public class Dish {
 
     public String getName() {
         return name;
+    }
+
+    public String getDishName(){
+        if (name == null){
+            System.out.println("Dish est null");
+            return null;
+
+        }else{
+            return name;
+        }
     }
 
     public DishtypeEnum getDishType() {

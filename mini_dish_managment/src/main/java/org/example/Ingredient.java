@@ -13,6 +13,14 @@ public class Ingredient {
         return id;
     }
 
+    public Object getDishName(){
+        if (dish.getName() == null){
+            return null;
+        }else {
+            return dish;
+        }
+
+    }
     public String getName() {
         return name;
     }
@@ -72,7 +80,6 @@ public class Ingredient {
                 ", name='" + name + '\'' +
                 ", price=" + price +
                 ", category=" + category +
-                ", dish=" + dish +
                 '}';
     }
 
