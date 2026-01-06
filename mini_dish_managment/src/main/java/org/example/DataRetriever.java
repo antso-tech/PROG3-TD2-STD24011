@@ -9,8 +9,9 @@ DBConnection dbConnection = new DBConnection();
 Connection connection;
 
     void findDishById(int id){
-        Dish dish = null;
+        Dish dish;
         List<Ingredient> ingredientList = new ArrayList<>();
+
         try {
             connection = dbConnection.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement("""
@@ -20,8 +21,7 @@ Connection connection;
             preparedStatement.setInt(1, id);
             ResultSet rs = preparedStatement.executeQuery();
 
-            while (rs.next()){
-                    if (dish == null){
+            if (rs.next()){
                     dish = new Dish();
                     int idDish = rs.getInt("id_dish");
                     String dishName = rs.getString("name");
@@ -43,13 +43,15 @@ Connection connection;
                         String ingredientName = ingredientRs.getString("name");
                         ingredient.setName(ingredientName);
                         ingredients.add(ingredient);
+                        dish.setIngredients(ingredients);
 
-                    }
 
-                    dish.setIngredients(ingredients);
                 }
                 System.out.println(dish);
-                return;
+
+            }else {
+                throw new RuntimeException("Erreur : l'Id n'existe pas ");
+
             }
 
 
@@ -94,24 +96,34 @@ Connection connection;
     List<Ingredient> createIngredients(List<Ingredient> newIngredients){
         List<Ingredient> newIngredientData = new ArrayList<>();
         try{
+            String checkIngredient = "SELECT id from ingredient where id = ?";
             String createIngredientQuery = "INSERT INTO INGREDIENT (id, name, price, category,id_dish) VALUES ( ?, ?, ?, ?::dish_category,?) RETURNING *";
             Boolean autoCommit = connection.getAutoCommit();
             connection.setAutoCommit(false);
 
+
             for (int i = 0; i < newIngredients.size(); i++) {
-                try{
+                PreparedStatement checkStatement = connection.prepareStatement(checkIngredient);
+                checkStatement.setInt(1,newIngredients.get(i).getId());
+                ResultSet rsCheck = checkStatement.executeQuery();
+
+                if (rsCheck.next()){
+                    System.out.println("ingredient déjà existant");
+                    continue;
+                }
+                try {
                     PreparedStatement ps = connection.prepareStatement(createIngredientQuery);
                     ps.setInt(1, newIngredients.get(i).getId());
                     ps.setString(2, newIngredients.get(i).getName());
                     ps.setDouble(3, newIngredients.get(i).getPrice());
                     ps.setObject(4, newIngredients.get(i).getCategory().name());
-                    ps.setInt(5,newIngredients.get(i).getDish().getId());
+                    ps.setInt(5, newIngredients.get(i).getDish().getId());
 
                     ResultSet rs = ps.executeQuery();
                     Ingredient ingredient = new Ingredient();
 
 
-                    while (rs.next()){
+                    while (rs.next()) {
                         int idIngredient = rs.getInt("id");
                         String name = rs.getString("name");
                         Double price = rs.getDouble("price");
@@ -122,69 +134,102 @@ Connection connection;
                         ingredient.setPrice(price);
                         ingredient.setCategory(category);
 
+
                     }
 
                     newIngredientData.add(ingredient);
-                }catch (SQLIntegrityConstraintViolationException e){
-                    System.out.println("Element Existant : " + e);
 
-
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                } catch (IllegalArgumentException e) {
+                    throw new RuntimeException(e);
                 }
-
             }
             connection.commit();
             connection.setAutoCommit(autoCommit);
 
-        }catch(SQLException e){
+        } catch (Exception e) {
             try {
                 connection.rollback();
-            } catch(SQLException ex){
+            } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
-
-            throw new RuntimeException("Erreur serveur : " + e.getMessage());
-
-
+            throw new RuntimeException(e);
         }
-        System.out.println(newIngredientData);
         return newIngredientData;
-        
     }
 
-    Dish saveDish(Dish dishToSave){
+    Dish saveDish(Dish dishToSave) {
         Dish dish = new Dish();
+        List<Ingredient> ingredients = new ArrayList<>();
+        Boolean checkDish = null;
 
-        try{
-            boolean checkDish = false;
-            try{
-                String checkDishQuery = "SELECT COUNT(*) as number from DISH WHERE id_dish = ?";
-                PreparedStatement ps = connection.prepareStatement(checkDishQuery);
-                ps.setInt(1, dishToSave.getId());
-                ResultSet rs = ps.executeQuery();
+        try {
+            Boolean autoCommit = connection.getAutoCommit();
+            connection.setAutoCommit(false);
 
-                while(rs.next()){
-                    int number = rs.getInt("number");
+            String checkDishQuery = "SELECT COUNT(*) as number from DISH WHERE id_dish = ?";
+            PreparedStatement ps = connection.prepareStatement(checkDishQuery);
+            ps.setInt(1, dishToSave.getId());
+            ResultSet rs = ps.executeQuery();
 
-                    if(number > 0){
-                        checkDish = true;
-                    }
+            while(rs.next()){
+                int number = rs.getInt("number");
 
+                if(number > 0){
+                    checkDish = true;
                 }
-            }catch(SQLException e) {
-                throw new RuntimeException(e);
             }
-            if(!checkDish){
+            if (!checkDish){
                 createDish(dishToSave);
 
-            }else{
+            }else {
                 updateDish(dishToSave);
 
             }
 
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+            String checkIngredient = "SELECT id, name from INGREDIENT where id = ?";
+            String addIngredient = "INSERT INTO INGREDIENT (id, name, price, category,id_dish) VALUES ( ?, ?, ?, ?::dish_category,?) RETURNING *";
+            String deleteIngredient = "DELETE from INGREDIENT WHERE id != ?";
+            Ingredient ingredient = new Ingredient();
 
+            for (int i = 0; i < dishToSave.getIngredient().size(); i++) {
+                PreparedStatement checkStatement = connection.prepareStatement(checkIngredient);
+
+                checkStatement.setInt(1, dishToSave.getIngredient().get(i).getId());
+
+                ResultSet rsCheck = checkStatement.executeQuery();
+
+                while(rsCheck.next()){
+                    String name = rsCheck.getString("name");
+                    ingredient.setName(name);
+                    ingredients.add(ingredient);
+
+                }
+                dish.setIngredients(ingredients);
+                if (rs.next()){
+                    PreparedStatement deleteStatement = connection.prepareStatement(deleteIngredient);
+                    deleteStatement.setInt(1,dishToSave.getIngredient().get(i).getId());
+
+                    int ingredientRows = deleteStatement.executeUpdate();
+
+                }else{
+                    PreparedStatement psStatement = dish
+
+                }
+                connection.commit();
+                connection.setAutoCommit(autoCommit);
+            }
+
+
+        }catch (SQLException e){
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+            throw  new RuntimeException(e);
+        }
         return dish;
     }
 
@@ -214,7 +259,6 @@ Connection connection;
                 dish.setName(dishName);
 
                 dish.setDishType(dishType);
-                System.out.println(ingredients);
                 dish.setIngredients(ingredients);
 
             }
@@ -243,9 +287,9 @@ Connection connection;
                     " i.id_dish = d.id_dish WHERE i.name ilike ? OR i.category::text " +
                     "ilike ? OR d.name ilike ? LIMIT ? OFFSET ?");
 
-            ps.setString(1, ingredientName);
+            ps.setString(1, '%' + ingredientName + '%');
             ps.setString(2, String.valueOf(category));
-            ps.setString(3, dishName);
+            ps.setString(3, '%' + dishName + '%');
             ps.setInt(4, page);
             ps.setInt(5, offset);
 
@@ -269,7 +313,6 @@ Connection connection;
                 ingredient.setDish(dish);
 
             }
-            System.out.println("---All-Dish----");
             System.out.println(dish);
 
             ingredients.add(ingredient);
@@ -288,8 +331,7 @@ Connection connection;
         Dish dish = new Dish();
         try{
             String createIngredientQuery = "INSERT INTO DISH (id_dish, name, dish_type) VALUES (?,?,?::dish_type) RETURNING *";
-            Boolean commitAuto = connection.getAutoCommit();
-            connection.setAutoCommit(false);
+
 
             PreparedStatement ps = connection.prepareStatement(createIngredientQuery);
 
@@ -307,28 +349,42 @@ Connection connection;
                 dish.setId(idDish);
                 dish.setName(dishName);
                 dish.setDishType(dishType);
+
+                String ingredientsQuery = "SELECT name from ingredient WHERE id_dish = 1";
+                Ingredient ingredient = new Ingredient();
+                List<Ingredient> ingredients = new ArrayList<>();
+
+                PreparedStatement ingredientsStatement = connection.prepareStatement(ingredientsQuery);
+                for (int i = 0; i < dishParameters.getIngredient().size() ; i++) {
+                    ingredientsStatement.setInt(1, dishParameters.getIngredient().get(i).getId());
+
+                    ResultSet rsIngredient = ingredientsStatement.executeQuery();
+                    while (rsIngredient.next()){
+                        String name = rsIngredient.getString("name");
+
+                        ingredient.setName(name);
+                        ingredients.add(ingredient);
+                        dish.setIngredients(ingredients);
+                    }
+                }
+
             }
-            connection.commit();
-            connection.setAutoCommit(commitAuto);
+
             System.out.println("Vous avec créez un plat");
             System.out.println(dish);
 
         } catch (SQLException e) {
-            try {
-                connection.rollback();
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            }
+
             throw new RuntimeException(e);
         }
 
     }
 
     void updateDish(Dish dishParameters){
+        Dish dish = new Dish();
         String updateDishQuery = "UPDATE DISH set id_dish = ?, name = ?, dish_type=?::dish_type WHERE id_dish = ?";
         try {
-            Boolean commitAuto = connection.getAutoCommit();
-            connection.setAutoCommit(false);
+
             PreparedStatement ps = connection.prepareStatement(updateDishQuery);
 
             ps.setInt(1, dishParameters.getId());
@@ -337,24 +393,9 @@ Connection connection;
             ps.setInt(4,dishParameters.getId());
 
             int UpdateRows = ps.executeUpdate();
-            System.out.println(UpdateRows);
-
-            connection.commit();
-            connection.setAutoCommit(commitAuto);
-
-            if (UpdateRows > 0){
-                System.out.println("Votre plat a été mis à jour !");
-
-            }else{
-                System.out.println("Erreur !");
-            }
 
         } catch (SQLException e) {
-            try {
-                connection.rollback();
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            }
+
             throw new RuntimeException(e);
         }
     }

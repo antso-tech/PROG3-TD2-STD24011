@@ -15,16 +15,23 @@ public class Main {
         Dish dishCreate = new Dish();
         Dish dishCreate2 = new Dish();
         Dish dishCreate3 = new Dish();
+
+        System.out.println("Find dish by id :");
         data.findDishById(1);
-        System.out.println("---return---");
-        data.findDishById(999);
-        System.out.println("test 1");
+    //    data.findDishById(999);
+
+        System.out.println("Find Ingredients :");
         data.findIngredients(2,2);
-        System.out.println("test 2");
-        data.findIngredients(2,3);
-        System.out.println("test 3");
+        data.findIngredients(3,5);
+
+        System.out.println("Find dish by Ingredient name: ");
         data.findDishsByIngredientName("eur");
         Ingredient ingredient1 = new Ingredient();
+
+        System.out.println("Find dish by criteria : ");
+        data.findIngredientsByCriteria(null, CategoryEnum.VEGETABLE, null, 1, 10);
+        data.findIngredientsByCriteria(null, null, "Sal", 1, 10);
+
         ingredient1.setId(7);
         ingredient1.setName("Lait");
         ingredient1.setCategory(CategoryEnum.DAIRY);
@@ -45,10 +52,14 @@ public class Main {
         ingredient3.setCategory(CategoryEnum.OTHER);
         dishCreate2.setId(4);
         ingredient3.setDish(dishCreate2);
-        List<Ingredient> ingredientList = List.of(ingredient1,ingredient3);
+        List<Ingredient> ingredientList = List.of(ingredient1);
         List<Ingredient> ingredientList2 = List.of(ingredient2);
-        //data.createIngredients(ingredientList);
-        //data.createIngredients(ingredientList2);
+
+        System.out.println("Create Ingredient : ");
+        data.createIngredients(ingredientList);
+        data.createIngredients(ingredientList2);
+
+        System.out.println("Save dish : ");
         dish1.setId(1);
         dish1.setName("Salade Fraîche");
         dish1.setDishType(DishtypeEnum.STARTER);
@@ -56,6 +67,7 @@ public class Main {
         dish2.setId(6);
         dish2.setName("Salade de légumes");
         dish2.setDishType(DishtypeEnum.STARTER);
+        dish2.setIngredients(ingredientList2);
         data.saveDish(dish2);
 
 

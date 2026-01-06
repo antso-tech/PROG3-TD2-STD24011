@@ -23,14 +23,14 @@ CREATE TABLE INGREDIENT (
 );
 
 SELECT d.id_dish, d.name as dishName, d.dish_type, i.name as ingredientName from DISH d 
-                LEFT JOIN INGREDIENT i on i.id_dish = d.id_dish WHERE i.id_dish = 1 ;
+                LEFT JOIN INGREDIENT i on i.id_dish = d.id_dish ;
 
 
 SELECT id_dish, name, dish_type FROM DISH WHERE id_dish = 1;
 
 SELECT NAME FROM INGREDIENT WHERE id_dish = 1;
 
-SELECT * from INGREDIENT ;
+
 
 DELETE from INGREDIENT WHERE id = 7
 
