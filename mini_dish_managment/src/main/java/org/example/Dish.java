@@ -1,5 +1,6 @@
 package org.example;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -7,7 +8,9 @@ public class Dish {
     private int id;
     private String name;
     private DishtypeEnum DishType;
-    private List<Ingredient> ingredients;
+    private List<Ingredient> ingredients = new ArrayList<>();
+
+
 
     public void setId(int id) {
         this.id = id;
@@ -19,10 +22,6 @@ public class Dish {
 
     public void setIngredients(List<Ingredient> ingredients) {
         this.ingredients = ingredients;
-    }
-
-    public String getDishName(){
-        return getName() == null ? null : this.getName();
     }
 
     @Override
@@ -58,9 +57,9 @@ public class Dish {
         DishType = dishType;
     }
 
-    public void setIngredient(List<Ingredient> ingredient) {
-            this.ingredients = ingredient;
 
+    public void addIngredient(Ingredient ingredient){
+        this.ingredients.add(ingredient);
     }
 
     public List<Ingredient> getIngredient() {
