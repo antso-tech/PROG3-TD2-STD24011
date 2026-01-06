@@ -10,6 +10,11 @@ public class Main {
         DBConnection dbConnection = new DBConnection();
         DataRetriever data = new DataRetriever();
         dbConnection.getConnection();
+        Dish dish1 = new Dish();
+        Dish dish2 = new Dish();
+        Dish dishCreate = new Dish();
+        Dish dishCreate2 = new Dish();
+        Dish dishCreate3 = new Dish();
         data.findDishById(1);
         System.out.println("---return---");
         data.findDishById(999);
@@ -24,20 +29,36 @@ public class Main {
         ingredient1.setName("Lait");
         ingredient1.setCategory(CategoryEnum.DAIRY);
         ingredient1.setPrice(14.00);
+        dishCreate3.setId(4);
+        ingredient1.setDish(dishCreate3);
         Ingredient ingredient2 = new Ingredient();
         ingredient2.setId(8);
         ingredient2.setName("Oignon");
         ingredient2.setPrice(15.00);
         ingredient2.setCategory(CategoryEnum.VEGETABLE);
+        dishCreate.setId(1);
+        ingredient2.setDish(dishCreate);
         Ingredient ingredient3 = new Ingredient();
         ingredient3.setId(9);
         ingredient3.setName("Farine");
         ingredient3.setPrice(12.00);
         ingredient3.setCategory(CategoryEnum.OTHER);
-        List<Ingredient> ingredientList = List.of(ingredient2,ingredient3);
-        data.createIngredients(ingredientList);
+        dishCreate2.setId(4);
+        ingredient3.setDish(dishCreate2);
+        List<Ingredient> ingredientList = List.of(ingredient1,ingredient3);
+        List<Ingredient> ingredientList2 = List.of(ingredient2);
+        //data.createIngredients(ingredientList);
+        //data.createIngredients(ingredientList2);
+        dish1.setId(1);
+        dish1.setName("Salade Fraîche");
+        dish1.setDishType(DishtypeEnum.STARTER);
+        dish1.setIngredients(ingredientList2);
+        dish2.setId(6);
+        dish2.setName("Salade de légumes");
+        dish2.setDishType(DishtypeEnum.STARTER);
+        data.saveDish(dish2);
 
-        dbConnection.closeConnection();
+
 
     }
 }
