@@ -188,36 +188,7 @@ Connection connection;
 
             }
 
-            String checkIngredient = "SELECT id, name from INGREDIENT where id = ?";
-            String addIngredient = "INSERT INTO INGREDIENT (id, name, price, category,id_dish) VALUES ( ?, ?, ?, ?::dish_category,?) RETURNING *";
-            String deleteIngredient = "DELETE from INGREDIENT WHERE id != ?";
-            Ingredient ingredient = new Ingredient();
-
-            for (int i = 0; i < dishToSave.getIngredient().size(); i++) {
-                PreparedStatement checkStatement = connection.prepareStatement(checkIngredient);
-
-                checkStatement.setInt(1, dishToSave.getIngredient().get(i).getId());
-
-                ResultSet rsCheck = checkStatement.executeQuery();
-
-                while(rsCheck.next()){
-                    String name = rsCheck.getString("name");
-                    ingredient.setName(name);
-                    ingredients.add(ingredient);
-
-                }
-                dish.setIngredients(ingredients);
-                if (rs.next()){
-                    PreparedStatement deleteStatement = connection.prepareStatement(deleteIngredient);
-                    deleteStatement.setInt(1,dishToSave.getIngredient().get(i).getId());
-
-                    int ingredientRows = deleteStatement.executeUpdate();
-
-                }
-                connection.commit();
-                connection.setAutoCommit(autoCommit);
-            }
-
+            connection.commit();
 
         }catch (SQLException e){
             try {
@@ -310,7 +281,6 @@ Connection connection;
                 ingredient.setDish(dish);
 
             }
-            System.out.println(dish);
 
             ingredients.add(ingredient);
 
@@ -328,7 +298,6 @@ Connection connection;
         Dish dish = new Dish();
         try{
             String createIngredientQuery = "INSERT INTO DISH (id_dish, name, dish_type) VALUES (?,?,?::dish_type) RETURNING *";
-
 
             PreparedStatement ps = connection.prepareStatement(createIngredientQuery);
 
@@ -348,7 +317,6 @@ Connection connection;
                 dish.setDishType(dishType);
 
                 String ingredientsQuery = "SELECT name from ingredient WHERE id_dish = 1";
-                Ingredient ingredient = new Ingredient();
                 List<Ingredient> ingredients = new ArrayList<>();
 
                 PreparedStatement ingredientsStatement = connection.prepareStatement(ingredientsQuery);
@@ -357,12 +325,13 @@ Connection connection;
 
                     ResultSet rsIngredient = ingredientsStatement.executeQuery();
                     while (rsIngredient.next()){
+                        Ingredient ingredient = new Ingredient();
                         String name = rsIngredient.getString("name");
-
                         ingredient.setName(name);
                         ingredients.add(ingredient);
-                        dish.setIngredients(ingredients);
+
                     }
+                    dish.setIngredients(ingredients);
                 }
 
             }
@@ -400,20 +369,20 @@ Connection connection;
                 dish.setName(name);
                 dish.setDishType(type);
 
-                Ingredient ingredient = new Ingredient();
                 String getIngredient = "SELECT (name) from ingredient where id = ?";
                 List<Ingredient> ingredients = new ArrayList<>();
 
                 PreparedStatement ingredientStatement = connection.prepareStatement(getIngredient);
                 for (int i = 0; i < dishParameters.getIngredients().size(); i++) {
+
                     ingredientStatement.setInt(1,dishParameters.getIngredients().get(i).getId());
 
                     ResultSet ingredientResultSet = ingredientStatement.executeQuery();
 
 
                     while (ingredientResultSet.next()){
+                        Ingredient ingredient = new Ingredient();
                         String ingredientName = ingredientResultSet.getString("name");
-
                         ingredient.setName(ingredientName);
                         ingredients.add(ingredient);
 

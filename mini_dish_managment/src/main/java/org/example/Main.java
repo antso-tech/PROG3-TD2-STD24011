@@ -1,6 +1,7 @@
 package org.example;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
@@ -10,11 +11,12 @@ public class Main {
         DBConnection dbConnection = new DBConnection();
         DataRetriever data = new DataRetriever();
         dbConnection.getConnection();
-        Dish dish1 = new Dish();
-        Dish dish2 = new Dish();
+        Dish saladeFraiche = new Dish();
+        Dish saladeLegume = new Dish();
         Dish dishCreate = new Dish();
         Dish dishCreate2 = new Dish();
         Dish dishCreate3 = new Dish();
+
 
         System.out.println("Find dish by id :");
         data.findDishById(1);
@@ -26,49 +28,76 @@ public class Main {
 
         System.out.println("Find dish by Ingredient name: ");
         data.findDishsByIngredientName("eur");
-        Ingredient ingredient1 = new Ingredient();
+        Ingredient lait = new Ingredient();
 
         System.out.println("Find dish by criteria : ");
         data.findIngredientsByCriteria(null, CategoryEnum.VEGETABLE, null, 1, 10);
         data.findIngredientsByCriteria(null, null, "Sal", 1, 10);
 
-        ingredient1.setId(7);
-        ingredient1.setName("Lait");
-        ingredient1.setCategory(CategoryEnum.DAIRY);
-        ingredient1.setPrice(14.00);
+        lait.setId(7);
+        lait.setName("Lait");
+        lait.setCategory(CategoryEnum.DAIRY);
+        lait.setPrice(14.00);
         dishCreate3.setId(4);
-        ingredient1.setDish(dishCreate3);
-        Ingredient ingredient2 = new Ingredient();
-        ingredient2.setId(8);
-        ingredient2.setName("Oignon");
-        ingredient2.setPrice(15.00);
-        ingredient2.setCategory(CategoryEnum.VEGETABLE);
+        lait.setDish(dishCreate3);
+        Ingredient oignon = new Ingredient();
+        oignon.setId(8);
+        oignon.setName("Oignon");
+        oignon.setPrice(15.00);
+        oignon.setCategory(CategoryEnum.VEGETABLE);
         dishCreate.setId(1);
-        ingredient2.setDish(dishCreate);
-        Ingredient ingredient3 = new Ingredient();
-        ingredient3.setId(9);
-        ingredient3.setName("Farine");
-        ingredient3.setPrice(12.00);
-        ingredient3.setCategory(CategoryEnum.OTHER);
+        oignon.setDish(dishCreate);
+        Ingredient farine = new Ingredient();
+        farine.setId(9);
+        farine.setName("Farine");
+        farine.setPrice(12.00);
+        farine.setCategory(CategoryEnum.OTHER);
         dishCreate2.setId(4);
-        ingredient3.setDish(dishCreate2);
-        List<Ingredient> ingredientList = List.of(ingredient1);
-        List<Ingredient> ingredientList2 = List.of(ingredient2);
+        farine.setDish(dishCreate2);
+        List<Ingredient> ingredientList = List.of(lait);
+        List<Ingredient> ingredientList2 = List.of(oignon);
 
         System.out.println("Create Ingredient : ");
         data.createIngredients(ingredientList);
         data.createIngredients(ingredientList2);
 
         System.out.println("Save dish : ");
-        dish1.setId(1);
-        dish1.setName("Salade Fraîche");
-        dish1.setDishType(DishtypeEnum.STARTER);
-        dish1.setIngredients(ingredientList2);
-        dish2.setId(6);
-        dish2.setName("Salade de légumes");
-        dish2.setDishType(DishtypeEnum.STARTER);
-        dish2.setIngredients(ingredientList2);
-        data.saveDish(dish2);
+        saladeFraiche.setId(1);
+        saladeFraiche.setName("Salade Fraîche");
+        saladeFraiche.setDishType(DishtypeEnum.STARTER);
+        saladeFraiche.setIngredients(ingredientList2);
+        saladeLegume.setId(6);
+        saladeLegume.setName("Salade de légumes");
+        saladeLegume.setDishType(DishtypeEnum.STARTER);
+        saladeLegume.setIngredients(ingredientList2);
+        data.saveDish(saladeLegume);
+        Ingredient fromage = new Ingredient();
+        fromage.setId(13);
+        fromage.setName("fromage");
+        fromage.setPrice(10.18);
+        fromage.setCategory(CategoryEnum.DAIRY);
+        fromage.setDish(saladeFraiche);
+        Ingredient oignon2 = new Ingredient();
+        oignon2.setId(8);
+        oignon2.setName("Oignon");
+        oignon2.setCategory(CategoryEnum.VEGETABLE);
+        oignon2.setDish(saladeFraiche);
+        Ingredient tomate = new Ingredient();
+        tomate.setId(2);
+        tomate.setName("Tomate");
+        tomate.setCategory(CategoryEnum.VEGETABLE);
+        tomate.setDish(saladeFraiche);
+        oignon2.setDish(saladeFraiche);
+        Ingredient laitue = new Ingredient();
+        laitue.setId(1);
+        laitue.setName("Laitue");
+        laitue.setCategory(CategoryEnum.VEGETABLE);
+        laitue.setDish(saladeFraiche);
+        List<Ingredient> saladeFraicheList = List.of(fromage, oignon2, tomate,laitue);
+        saladeFraiche.setIngredients(saladeFraicheList);
+        data.saveDish(saladeFraiche);
+
+
 
 
 
