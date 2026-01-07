@@ -213,9 +213,6 @@ Connection connection;
 
                     int ingredientRows = deleteStatement.executeUpdate();
 
-                }else{
-                    PreparedStatement psStatement = dish
-
                 }
                 connection.commit();
                 connection.setAutoCommit(autoCommit);
@@ -382,7 +379,7 @@ Connection connection;
 
     void updateDish(Dish dishParameters){
         Dish dish = new Dish();
-        String updateDishQuery = "UPDATE DISH set id_dish = ?, name = ?, dish_type=?::dish_type WHERE id_dish = ?";
+        String updateDishQuery = "UPDATE DISH set id_dish = ?, name = ?, dish_type=?::dish_type WHERE id_dish = ? RETURNING id_dish, name, dish_type";
         try {
 
             PreparedStatement ps = connection.prepareStatement(updateDishQuery);
@@ -392,7 +389,40 @@ Connection connection;
             ps.setObject(3, dishParameters.getDishType().name());
             ps.setInt(4,dishParameters.getId());
 
-            int UpdateRows = ps.executeUpdate();
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()){
+                int id = rs.getInt("id_dish");
+                String name = rs.getString("name");
+                DishtypeEnum type = DishtypeEnum.valueOf(rs.getString("dish_type"));
+
+                dish.setId(id);
+                dish.setName(name);
+                dish.setDishType(type);
+
+                Ingredient ingredient = new Ingredient();
+                String getIngredient = "SELECT (name) from ingredient where id = ?";
+                List<Ingredient> ingredients = new ArrayList<>();
+
+                PreparedStatement ingredientStatement = connection.prepareStatement(getIngredient);
+                for (int i = 0; i < dishParameters.getIngredients().size(); i++) {
+                    ingredientStatement.setInt(1,dishParameters.getIngredients().get(i).getId());
+
+                    ResultSet ingredientResultSet = ingredientStatement.executeQuery();
+
+
+                    while (ingredientResultSet.next()){
+                        String ingredientName = ingredientResultSet.getString("name");
+
+                        ingredient.setName(ingredientName);
+                        ingredients.add(ingredient);
+
+                    }
+                }
+                dish.setIngredients(ingredients);
+            }
+
+            System.out.println(dish);
 
         } catch (SQLException e) {
 
