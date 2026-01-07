@@ -161,7 +161,7 @@ Connection connection;
 
     Dish saveDish(Dish dishToSave) {
         Dish dish = new Dish();
-        List<Ingredient> ingredients = new ArrayList<>();
+
         Boolean checkDish = false;
 
         try {
