@@ -162,7 +162,7 @@ Connection connection;
     Dish saveDish(Dish dishToSave) {
         Dish dish = new Dish();
         List<Ingredient> ingredients = new ArrayList<>();
-        Boolean checkDish = null;
+        Boolean checkDish = false;
 
         try {
             Boolean autoCommit = connection.getAutoCommit();
