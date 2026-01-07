@@ -400,5 +400,3 @@ Connection connection;
     }
 
 }
-// find ingredientbydiishid
-// key word : rollback, setAutoCommit
