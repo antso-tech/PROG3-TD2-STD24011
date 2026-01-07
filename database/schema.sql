@@ -20,5 +20,3 @@ CREATE TABLE INGREDIENT (
     CONSTRAINT fk_dish FOREIGN KEY (id_dish) REFERENCES DISH(id_dish) 
 
 );
-
-
