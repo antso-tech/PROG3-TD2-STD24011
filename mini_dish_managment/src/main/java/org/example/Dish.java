@@ -9,6 +9,8 @@ public class Dish {
     private String name;
     private DishtypeEnum DishType;
     private List<Ingredient> ingredients = new ArrayList<>();
+    private Double price;
+
 
     public void setId(int id) {
         this.id = id;
@@ -65,15 +67,20 @@ public class Dish {
         DishType = dishType;
     }
 
-
-    public void addIngredient(Ingredient ingredient){
-        this.ingredients.add(ingredient);
-    }
-
     public List<Ingredient> getIngredient() {
         return ingredients;
     }
 
+    public Double getPrice() {
+        return price;
+    }
+
+    public Double getDishCost (){
+        return  ingredients.stream().mapToDouble(Ingredient::getPrice).sum();
+    }
+    public void setPrice(Double price) {
+        this.price = price;
+    }
 
     @Override
     public String toString() {
@@ -82,7 +89,18 @@ public class Dish {
                 ", name='" + name + '\'' +
                 ", DishType=" + DishType +
                 ", Ingredients=" + ingredients.stream().map(Ingredient::getName).toList() +
+                ", Price=" + price +
                 '}';
+    }
+
+
+    double getGrossMargin(){
+        if (price != null){
+            return price - getDishCost();
+        }else{
+            throw new IllegalArgumentException("Le prix de votre plat ne possede pas de valeur souhaité !");
+        }
+
     }
 
 }

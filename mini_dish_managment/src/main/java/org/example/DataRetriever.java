@@ -15,7 +15,7 @@ Connection connection;
         try {
             connection = dbConnection.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement("""
-            SELECT id_dish, name, dish_type FROM DISH WHERE id_dish = ?;
+            SELECT id_dish, name, dish_type ,price FROM DISH WHERE id_dish = ?;
 """);
 
             preparedStatement.setInt(1, id);
@@ -26,11 +26,16 @@ Connection connection;
                     int idDish = rs.getInt("id_dish");
                     String dishName = rs.getString("name");
                     DishtypeEnum category = DishtypeEnum.valueOf(rs.getString("dish_type"));
+                    Double price = rs.getDouble("price");
 
+                    if (price == 0.0) {
+                        throw new RuntimeException("Le prix n'a pas été implémenté");
+                    }
                     dish.setId(idDish);
                     dish.setIngredients(ingredientList);
                     dish.setName(dishName);
                     dish.setDishType(category);
+                    dish.setPrice(price);
 
                     String ingredientListQuery = "SELECT name FROM INGREDIENT WHERE id_dish = ?";
                     PreparedStatement ps = connection.prepareStatement(ingredientListQuery);
@@ -77,6 +82,7 @@ Connection connection;
                 Long priceIngredient = rs.getLong("price");
                 CategoryEnum category = CategoryEnum.valueOf(rs.getString("category"));
 
+
                 ingredient.setId(idIngredient);
                 ingredient.setName(nameIngredient);
                 ingredient.setPrice(priceIngredient);
@@ -98,7 +104,6 @@ Connection connection;
         try{
             String checkIngredient = "SELECT id from ingredient where id = ?";
             String createIngredientQuery = "INSERT INTO INGREDIENT (id, name, price, category,id_dish) VALUES ( ?, ?, ?, ?::dish_category,?) RETURNING *";
-            Boolean autoCommit = connection.getAutoCommit();
             connection.setAutoCommit(false);
 
 
@@ -146,7 +151,6 @@ Connection connection;
                 }
             }
             connection.commit();
-            connection.setAutoCommit(autoCommit);
 
         } catch (Exception e) {
             try {
@@ -159,13 +163,10 @@ Connection connection;
         return newIngredientData;
     }
 
-    Dish saveDish(Dish dishToSave) {
-        Dish dish = new Dish();
-
+ void saveDish(Dish dishToSave) {
         Boolean checkDish = false;
 
         try {
-            Boolean autoCommit = connection.getAutoCommit();
             connection.setAutoCommit(false);
 
             String checkDishQuery = "SELECT COUNT(*) as number from DISH WHERE id_dish = ?";
@@ -198,7 +199,7 @@ Connection connection;
             }
             throw  new RuntimeException(e);
         }
-        return dish;
+
     }
 
     List<Dish> findDishsByIngredientName(String IngredientName){
@@ -297,13 +298,14 @@ Connection connection;
     void createDish(Dish dishParameters){
         Dish dish = new Dish();
         try{
-            String createIngredientQuery = "INSERT INTO DISH (id_dish, name, dish_type) VALUES (?,?,?::dish_type) RETURNING *";
+            String createIngredientQuery = "INSERT INTO DISH (id_dish, name, dish_type, price) VALUES (?,?,?::dish_type,?) RETURNING id_dish, name, dish_type, price";
 
             PreparedStatement ps = connection.prepareStatement(createIngredientQuery);
 
             ps.setInt(1,dishParameters.getId());
             ps.setString(2, dishParameters.getName());
             ps.setObject(3,dishParameters.getDishType().name());
+            ps.setDouble(4,dishParameters.getPrice());
 
             ResultSet rs = ps.executeQuery();
 
@@ -311,10 +313,12 @@ Connection connection;
                 int idDish = rs.getInt("id_dish");
                 String dishName = rs.getString("name");
                 DishtypeEnum dishType =  DishtypeEnum.valueOf(rs.getString("dish_type"));
+                Double price = rs.getDouble("price");
 
                 dish.setId(idDish);
                 dish.setName(dishName);
                 dish.setDishType(dishType);
+                dish.setPrice(price);
 
                 String ingredientsQuery = "SELECT name from ingredient WHERE id_dish = 1";
                 List<Ingredient> ingredients = new ArrayList<>();
@@ -348,7 +352,7 @@ Connection connection;
 
     void updateDish(Dish dishParameters){
         Dish dish = new Dish();
-        String updateDishQuery = "UPDATE DISH set id_dish = ?, name = ?, dish_type=?::dish_type WHERE id_dish = ? RETURNING id_dish, name, dish_type";
+        String updateDishQuery = "UPDATE DISH set id_dish= ?, name = ?, dish_type=?::dish_type, price=? WHERE id_dish = ? RETURNING id_dish, name, dish_type, price";
         try {
 
             PreparedStatement ps = connection.prepareStatement(updateDishQuery);
@@ -356,7 +360,8 @@ Connection connection;
             ps.setInt(1, dishParameters.getId());
             ps.setString(2, dishParameters.getName());
             ps.setObject(3, dishParameters.getDishType().name());
-            ps.setInt(4,dishParameters.getId());
+            ps.setInt(5,dishParameters.getId());
+            ps.setDouble(4, dishParameters.getPrice());
 
             ResultSet rs = ps.executeQuery();
 
@@ -364,10 +369,12 @@ Connection connection;
                 int id = rs.getInt("id_dish");
                 String name = rs.getString("name");
                 DishtypeEnum type = DishtypeEnum.valueOf(rs.getString("dish_type"));
+                Double price = rs.getDouble("price");
 
                 dish.setId(id);
                 dish.setName(name);
                 dish.setDishType(type);
+                dish.setPrice(price);
 
                 String getIngredient = "SELECT (name) from ingredient where id = ?";
                 List<Ingredient> ingredients = new ArrayList<>();
@@ -398,5 +405,7 @@ Connection connection;
             throw new RuntimeException(e);
         }
     }
+
+
 
 }
