@@ -60,7 +60,7 @@ public class Dish {
 
     public double getMarginGross(){
         if (getPrice() == null){
-            throw new RuntimeException("vous devez ajouter un nouveau plat ");
+            throw new RuntimeException("Le prix du plat est null ");
         }
 
         return getPrice() - getDishCost();
@@ -70,8 +70,9 @@ public class Dish {
         double totalPrice = 0;
         for (int i = 0; i < ingredients.size(); i++) {
             Double quantity = ingredients.get(i).getQuantity();
-            if (getIngredients().isEmpty() || getPrice() == null){
-                throw  new RuntimeException("Le prix du plat est vide ");
+            if (getPrice() == null){
+                totalPrice = 00.0;
+
             }else{
                 totalPrice += ingredients.get(i).getIngredient().getPrice() * quantity;
             }

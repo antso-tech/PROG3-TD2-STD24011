@@ -44,7 +44,7 @@ INSERT INTO DISH (name,dishType, price) VALUES
 ('Salade de fruits', 'DESSERT', NULL);
 
 INSERT INTO INGREDIENT (name, price, category) VALUES 
-('Laitue', '800.00','VEGETABLE'),
+('Laitue', 800.00,'VEGETABLE'),
 ('Tomate', 4500.00, 'VEGETABLE'),
 ('Poulet', 3000.00,'ANIMAL'),
 ('Chocolat', 3000.00,'OTHER'),
