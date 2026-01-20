@@ -9,29 +9,40 @@ public class DataRetriever {
 DBConnection dbConnection = new DBConnection();
 Connection connection;
 
-    List<Ingredient> findIngredientbyId (int id){
-        List<Ingredient> ingredients = new ArrayList<>();
+    List<DishIngredients> findIngredientbyDishId (int id){
+        List<DishIngredients> ingredients = new ArrayList<>();
         try {
             connection = dbConnection.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement("""
-            SELECT id, name, price, category from INGREDIENT WHERE id= ?
+           SELECT i.id, i.name, i.price, i.category, di.quantity_required, di.unit, d.name 
+           FROM INGREDIENT i  FULL JOIN dishIngredient di ON i.id = di.id JOIN dish d on d.id = di.id 
+           WHERE di.id_dish = ?;
 """);
             preparedStatement.setInt(1,id);
 
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()){
                 Ingredient ingredient = new Ingredient();
+                DishIngredients dishIngredient = new DishIngredients();
                 int idIngredient = resultSet.getInt("id");
                 String ingredientName = resultSet.getString("name");
                 double price = resultSet.getDouble("price");
                 CategoryEnum category = CategoryEnum.valueOf(resultSet.getString("category"));
+                Double quantity = resultSet.getDouble("quantity_required");
+                UnitType unit = UnitType.valueOf(resultSet.getString("unit"));
 
                 ingredient.setId(idIngredient);
                 ingredient.setName(ingredientName);
                 ingredient.setPrice(price);
                 ingredient.setCategory(category);
-                ingredients.add(ingredient);
-                System.out.println(ingredient);
+
+                dishIngredient.setIngredient(ingredient);
+                dishIngredient.setQuantity(quantity);
+                dishIngredient.setUnit(unit);
+
+                System.out.println(dishIngredient);
+
+
             }
 
             return ingredients;

@@ -1,5 +1,7 @@
 package org.example;
 
+import java.util.Objects;
+
 public class DishIngredients {
     int id;
     Dish dish;
@@ -62,5 +64,28 @@ public class DishIngredients {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        DishIngredients that = (DishIngredients) o;
+        return id == that.id && Objects.equals(dish, that.dish) && Objects.equals(ingredient, that.ingredient) && Objects.equals(quantity, that.quantity) && unit == that.unit;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, dish, ingredient, quantity, unit);
+    }
+
+    @Override
+    public String toString() {
+        return "DishIngredients{" +
+                "id=" + id +
+                ", dish=" + dish +
+                ", ingredient=" + ingredient +
+                ", quantity=" + quantity +
+                ", unit=" + unit +
+                '}';
     }
 }

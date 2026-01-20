@@ -50,3 +50,10 @@ INSERT INTO INGREDIENT (name, price, category) VALUES
 ('Chocolat', 3000.00,'OTHER'),
 ('Beurre',2500.00, 'DAIRY');
 
+SELECT * FROM INGREDIENT;
+select * from DISH;
+SELECT * from DISHINGREDIENT;
+
+
+SELECT i.id, i.name, i.price, i.category, di.quantity_required, di.unit, d.name FROM INGREDIENT i  FULL JOIN dishIngredient di ON i.id = di.id JOIN dish d on d.id = di.id WHERE di.id_dish = 1;
+
