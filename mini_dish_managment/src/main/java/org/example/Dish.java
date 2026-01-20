@@ -62,16 +62,18 @@ public class Dish {
         if (getPrice() == null){
             throw new RuntimeException("vous devez ajouter un nouveau plat ");
         }
-        return getPrice() - ingredients.stream().mapToDouble(i -> i.getDish().getPrice()).sum();
+
+        return getPrice() - getDishCost();
     }
 
     public Double getDishCost(){
         double totalPrice = 0;
         for (int i = 0; i < ingredients.size(); i++) {
+            Double quantity = ingredients.get(i).getQuantity();
             if (getIngredients().isEmpty() || getPrice() == null){
                 throw  new RuntimeException("Le prix du plat est vide ");
             }else{
-                totalPrice = getPrice() + ingredients.get(i).getIngredient().getPrice() * ingredients.get(i).getQuantity();
+                totalPrice += ingredients.get(i).getIngredient().getPrice() * quantity;
             }
 
         }

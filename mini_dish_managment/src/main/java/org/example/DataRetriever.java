@@ -14,7 +14,7 @@ Connection connection;
         try {
             connection = dbConnection.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement("""
-           SELECT i.id, i.name, i.price, i.category, di.quantity_required, di.unit, d.name 
+           SELECT di.id, i.name, i.price, i.category, di.quantity_required, di.unit, d.name, i.id as idIngredient 
            FROM INGREDIENT i  FULL JOIN dishIngredient di ON i.id = di.id JOIN dish d on d.id = di.id 
            WHERE di.id_dish = ?;
 """);
@@ -24,7 +24,8 @@ Connection connection;
             if (resultSet.next()){
                 Ingredient ingredient = new Ingredient();
                 DishIngredients dishIngredient = new DishIngredients();
-                int idIngredient = resultSet.getInt("id");
+                int idIngredientDish = resultSet.getInt("id");
+                int idIngredient = resultSet.getInt("idIngredient");
                 String ingredientName = resultSet.getString("name");
                 double price = resultSet.getDouble("price");
                 CategoryEnum category = CategoryEnum.valueOf(resultSet.getString("category"));
@@ -39,9 +40,9 @@ Connection connection;
                 dishIngredient.setIngredient(ingredient);
                 dishIngredient.setQuantity(quantity);
                 dishIngredient.setUnit(unit);
+                dishIngredient.setId(idIngredientDish);
 
                 System.out.println(dishIngredient);
-
 
             }
 
@@ -53,8 +54,6 @@ Connection connection;
 
     void findDishById(int id){
         Dish dish;
-        List<Ingredient> ingredientList = new ArrayList<>();
-
         try {
             connection = dbConnection.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement("""
