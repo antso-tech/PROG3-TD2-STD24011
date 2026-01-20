@@ -1,6 +1,6 @@
-INSERT INTO DISH (id_dish, name,dish_type) VALUES (1, 'Salade Fraîche', 'START')
+INSERT INTO DISH (id, name,dish_type) VALUES (1, 'Salade Fraîche', 'START'),
 
-INSERT INTO DISH (id_dish, name,dish_type) VALUES (2, 'Poulet grillé', 'MAIN'), 
+INSERT INTO DISH (id, name,dish_type) VALUES (2, 'Poulet grillé', 'MAIN'), 
 (3,'Riz aux légumes', 'MAIN'),
 (4,'Gâteaux aux chocolat', 'DESSERT'),
 (5, 'Salade de fruits', 'DESSERT');

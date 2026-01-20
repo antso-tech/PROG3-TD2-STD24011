@@ -7,33 +7,36 @@ import java.util.Objects;
 public class Dish {
     private int id;
     private String name;
-    private DishtypeEnum DishType;
-    private List<Ingredient> ingredients = new ArrayList<>();
+    private DishtypeEnum dishType;
     private Double price;
+    private List<DishIngredients> ingredients;
 
+    public Dish(){
+
+    }
+
+    public Dish(int id, String name, DishtypeEnum dishType, Double price, List<DishIngredients> ingredients) {
+        this.id = id;
+        this.name = name;
+        this.dishType = dishType;
+        this.price = price;
+        this.ingredients = new ArrayList<>();
+    }
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public List<Ingredient> getIngredients() {
-        return ingredients;
-    }
-
-    public void setIngredients(List<Ingredient> ingredients) {
-        this.ingredients = ingredients;
     }
 
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Dish dish = (Dish) o;
-        return id == dish.id && Objects.equals(name, dish.name) && DishType == dish.DishType;
+        return id == dish.id && Objects.equals(name, dish.name) && dishType == dish.dishType;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, DishType);
+        return Objects.hash(id, name, dishType);
     }
 
     public int getId() {
@@ -54,8 +57,30 @@ public class Dish {
         }
     }
 
+
+    public double getMarginGross(){
+        if (getPrice() == null){
+            throw new RuntimeException("vous devez ajouter un nouveau plat ");
+        }
+        return getPrice() - ingredients.stream().mapToDouble(i -> i.getDish().getPrice()).sum();
+    }
+
+    public Double getDishCost(){
+        double totalPrice = 0;
+        for (int i = 0; i < ingredients.size(); i++) {
+            if (getIngredients().isEmpty() || getPrice() == null){
+                throw  new RuntimeException("Le prix du plat est vide ");
+            }else{
+                totalPrice = getPrice() + ingredients.get(i).getIngredient().getPrice() * ingredients.get(i).getQuantity();
+            }
+
+        }
+        return totalPrice;
+
+    }
+
     public DishtypeEnum getDishType() {
-        return DishType;
+        return dishType;
     }
 
 
@@ -64,43 +89,35 @@ public class Dish {
     }
 
     public void setDishType(DishtypeEnum dishType) {
-        DishType = dishType;
-    }
-
-    public List<Ingredient> getIngredient() {
-        return ingredients;
+        this.dishType = dishType;
     }
 
     public Double getPrice() {
         return price;
     }
 
-    public Double getDishCost (){
-        return  ingredients.stream().mapToDouble(Ingredient::getPrice).sum();
-    }
     public void setPrice(Double price) {
         this.price = price;
     }
+
+    public List<DishIngredients> getIngredients() {
+        return ingredients;
+    }
+
+    public void setIngredients(List<DishIngredients> ingredients) {
+        this.ingredients = ingredients;
+    }
+
 
     @Override
     public String toString() {
         return "Dish{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", DishType=" + DishType +
-                ", Ingredients=" + ingredients.stream().map(Ingredient::getName).toList() +
+                ", DishType=" + dishType +
                 ", Price=" + price +
+                ", Ingredients=" + ingredients +
                 '}';
-    }
-
-
-    double getGrossMargin(){
-        if (price != null){
-            return price - getDishCost();
-        }else{
-            throw new IllegalArgumentException("Le prix de votre plat ne possede pas de valeur souhaité !");
-        }
-
     }
 
 }
