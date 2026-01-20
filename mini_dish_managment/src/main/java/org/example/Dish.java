@@ -15,7 +15,7 @@ public class Dish {
 
     }
 
-    public Dish(int id, String name, DishtypeEnum dishType, Double price, List<DishIngredients> ingredients) {
+    public Dish(int id, String name, DishtypeEnum dishType, Double price) {
         this.id = id;
         this.name = name;
         this.dishType = dishType;

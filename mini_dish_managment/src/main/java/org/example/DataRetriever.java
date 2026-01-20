@@ -67,7 +67,7 @@ Connection connection;
                     dish.setName(dishName);
                     dish.setDishType(category);
                     dish.setPrice(rs.getObject("price") == null ? null : rs.getDouble("price"));
-                    dish.setIngredients(findIngredientbyId(id));
+
 
 
                 System.out.println(dish);
