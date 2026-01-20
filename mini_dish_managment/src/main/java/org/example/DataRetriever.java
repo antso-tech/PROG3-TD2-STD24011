@@ -192,12 +192,17 @@ Connection connection;
     }
 
  void saveDish(Dish dishToSave) {
-     Dish dish = new Dish();
-     String updateDishQuery = "INSERT INTO DISH (name, dishType, price) " +
-             "VALUES (?,?::dish_type,?) ON CONFLICT (id) DO " +
-             "UPDATE set name = EXCLUDED.name, dishType = EXCLUDED.dishType " +
-             "RETURNING id ";
+     String updateDishQuery = """
+         INSERT INTO DISH (name, dishType, price) VALUES (?,?::dish_type,?) ON CONFLICT (name) DO 
+         UPDATE set dishType = EXCLUDED.dishType, price = EXCLUDED.price 
+         RETURNING id
+             """;
      try (Connection conn = new DBConnection().getConnection()){
+
+         System.out.println("DEBUG - Saving dish:");
+         System.out.println("  Name: " + dishToSave.getName());
+         System.out.println("  Type: " + dishToSave.getDishType());
+         System.out.println("  Price: " + dishToSave.getPrice());
          conn.setAutoCommit(false);
          Integer dishId;
          try (PreparedStatement ps = conn.prepareStatement(updateDishQuery)){
@@ -206,28 +211,28 @@ Connection connection;
              }else{
                  ps.setNull(3, Types.DOUBLE);
              }
+             System.out.println("DEBUG - Executing UPSERT for: " + dishToSave.getName());
              ps.setString(1, dishToSave.getName());
              ps.setString(2, dishToSave.getDishType().name());
-
              try (ResultSet rs = ps.executeQuery()) {
                  if (rs.next()){
-                     dishId = rs.getInt(1);
+                     int savedId = rs.getInt(1);
+                     dishToSave.setId(savedId);
+
                  }else{
-                     new RuntimeException("ID not found");
+                     System.out.println("Failed to save Dish");
                  }
-
              }
-
-
-
+             conn.commit();
          }
 
 
      } catch (SQLException e) {
-
+         System.err.println("ERROR - No result from UPSERT");
          throw new RuntimeException(e);
      }
-    }
+     return ;
+ }
 
     private void detachIngredient(Connection conn, Integer id, List<DishIngredients> dishIngredients) throws SQLException {
             if(dishIngredients == null || dishIngredients.isEmpty()){
