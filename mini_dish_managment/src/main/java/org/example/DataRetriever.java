@@ -192,39 +192,51 @@ Connection connection;
     }
 
  void saveDish(Dish dishToSave) {
+     System.out.println("=== DEBUT saveDish ===");
+     System.out.println("Dish: " + dishToSave);
+
      String updateDishQuery = """
-         INSERT INTO DISH (name, dishType, price) VALUES (?,?::dish_type,?) ON CONFLICT (name) DO 
-         UPDATE set dishType = EXCLUDED.dishType, price = EXCLUDED.price 
+         INSERT INTO DISH (name, dishType, price) VALUES (?,?::dish_type,?) ON CONFLICT (id) DO 
+         UPDATE set name = EXCLUDED.name,dishType = EXCLUDED.dishType, price = EXCLUDED.price 
          RETURNING id
              """;
      try (Connection conn = new DBConnection().getConnection()){
+         System.out.println("Connexion établie: " + conn);
+         System.out.println("Auto-commit initial: " + conn.getAutoCommit());
 
-         System.out.println("DEBUG - Saving dish:");
-         System.out.println("  Name: " + dishToSave.getName());
-         System.out.println("  Type: " + dishToSave.getDishType());
-         System.out.println("  Price: " + dishToSave.getPrice());
          conn.setAutoCommit(false);
+         System.out.println("Auto-commit désactivé");
+
          Integer dishId;
-         try (PreparedStatement ps = conn.prepareStatement(updateDishQuery)){
-             if (dishToSave.getPrice() != null){
-                 ps.setDouble(3, dishToSave.getPrice());
-             }else{
-                 ps.setNull(3, Types.DOUBLE);
-             }
+         try (PreparedStatement ps = conn.prepareStatement(updateDishQuery)) {
+             System.out.println("Requête préparée: " + ps.toString());
+
              System.out.println("DEBUG - Executing UPSERT for: " + dishToSave.getName());
              ps.setString(1, dishToSave.getName());
              ps.setString(2, dishToSave.getDishType().name());
-             try (ResultSet rs = ps.executeQuery()) {
-                 if (rs.next()){
-                     int savedId = rs.getInt(1);
-                     dishToSave.setId(savedId);
-
-                 }else{
-                     System.out.println("Failed to save Dish");
-                 }
+             if (dishToSave.getPrice() != null) {
+                 System.out.println("Paramètres: name=" + dishToSave.getName()
+                         + ", type=" + dishToSave.getDishType().name()
+                         + ", price=" + dishToSave.getPrice());
+                 ps.setDouble(3, dishToSave.getPrice());
+             } else {
+                 ps.setNull(3, Types.DOUBLE);
+                 System.out.println("Paramètres: name=" + dishToSave.getName()
+                         + ", type=" + dishToSave.getDishType().name()
+                         + ", price=NULL");
              }
-             conn.commit();
+             System.out.println("Exécution de la requête...");
+             try (ResultSet rs = ps.executeQuery()) {
+                 System.out.println("Requête exécutée");
+                 rs.next();
+                 dishId = rs.getInt("id");
+
+             }
+
          }
+         List<DishIngredients> dishIngredients = new ArrayList<>();
+         attachIngredient(conn, dishId, dishIngredients );
+         detachIngredient(conn, dishId, dishIngredients);
 
 
      } catch (SQLException e) {

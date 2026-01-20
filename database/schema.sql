@@ -30,6 +30,9 @@ ALTER TABLE  DISH ADD COLUMN IF NOT EXISTS price NUMERIC(10,2) DEFAULT NULL;
 SELECT * FROM DISH;
 
 
+
+-- 2. Ajouter la contrainte UNIQUE
+
 UPDATE DISH SET PRICE = 2000 where id_dish= 1;
 UPDATE DISH SET PRICE = 6000 where id_dish= 2;
 
