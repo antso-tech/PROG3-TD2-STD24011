@@ -174,8 +174,6 @@ Connection connection;
 
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
-                } catch (IllegalArgumentException e) {
-                    throw new RuntimeException(e);
                 }
             }
             connection.commit();
