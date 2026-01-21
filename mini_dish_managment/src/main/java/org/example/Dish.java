@@ -9,7 +9,7 @@ public class Dish {
     private String name;
     private DishtypeEnum dishType;
     private Double price;
-    private List<DishIngredients> ingredients;
+    private List<DishIngredients> dishIngredients;
 
     public Dish(){
 
@@ -20,7 +20,7 @@ public class Dish {
         this.name = name;
         this.dishType = dishType;
         this.price = price;
-        this.ingredients = new ArrayList<>();
+        this.dishIngredients = new ArrayList<>();
     }
 
     public void setId(int id) {
@@ -68,13 +68,13 @@ public class Dish {
 
     public Double getDishCost(){
         double totalPrice = 0;
-        for (int i = 0; i < ingredients.size(); i++) {
-            Double quantity = ingredients.get(i).getQuantity();
+        for (int i = 0; i < dishIngredients.size(); i++) {
+            Double quantity = dishIngredients.get(i).getQuantity();
             if (getPrice() == null){
                 totalPrice = 00.0;
 
             }else{
-                totalPrice += ingredients.get(i).getIngredient().getPrice() * quantity;
+                totalPrice += dishIngredients.get(i).getIngredient().getPrice() * quantity;
             }
 
         }
@@ -103,12 +103,12 @@ public class Dish {
         this.price = price;
     }
 
-    public List<DishIngredients> getIngredients() {
-        return ingredients;
+    public List<DishIngredients> getDishIngredients() {
+        return dishIngredients;
     }
 
-    public void setIngredients(List<DishIngredients> ingredients) {
-        this.ingredients = ingredients;
+    public void setDishIngredients(List<DishIngredients> dishIngredients) {
+        this.dishIngredients = dishIngredients;
     }
 
 
@@ -119,7 +119,7 @@ public class Dish {
                 ", name='" + name + '\'' +
                 ", DishType=" + dishType +
                 ", Price=" + price +
-                ", Ingredients=" + ingredients +
+                ", Ingredients=" + dishIngredients +
                 '}';
     }
 

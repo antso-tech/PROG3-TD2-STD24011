@@ -57,7 +57,8 @@ Connection connection;
         try {
             connection = dbConnection.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement("""
-            SELECT d.id as idDish, d.name as dishName, d.dishType, d.price ,i.name as ingredientName 
+            SELECT d.id as idDish, d.name as dishName, d.dishType, d.price 
+               ,i.name as ingredientName
             FROM dish d 
                 left join dishIngredient dt on d.id = dt.id 
                 LEFT JOIN INGREDIENT i on dt.id = d.id 
@@ -67,18 +68,18 @@ Connection connection;
             preparedStatement.setInt(1, id);
             ResultSet rs = preparedStatement.executeQuery();
 
+
             if (rs.next()){
                     dish = new Dish();
+                    Ingredient ingredient = new Ingredient();
                     int idDish = rs.getInt("idDish");
                     String dishName = rs.getString("dishName");
-                    DishtypeEnum category = DishtypeEnum.valueOf(rs.getString("dishType"));
+                    DishtypeEnum type = DishtypeEnum.valueOf(rs.getString("dishType"));
 
                     dish.setId(idDish);
                     dish.setName(dishName);
-                    dish.setDishType(category);
+                    dish.setDishType(type);
                     dish.setPrice(rs.getObject("price") == null ? null : rs.getDouble("price"));
-
-
 
                 System.out.println(dish);
 
