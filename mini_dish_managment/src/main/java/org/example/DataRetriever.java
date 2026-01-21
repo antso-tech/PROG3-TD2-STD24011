@@ -192,18 +192,15 @@ Connection connection;
     }
 
  void saveDish(Dish dishToSave) {
-     System.out.println("=== DEBUT saveDish ===");
-     System.out.println("Dish: " + dishToSave);
+     Connection conn = null;
 
      String updateDishQuery = """
-         INSERT INTO DISH (name, dishType, price) VALUES (?,?::dish_type,?) ON CONFLICT (id) DO 
+         INSERT INTO DISH (name, dishType, price) VALUES (?,?::dish_type,?) ON CONFLICT (name) DO 
          UPDATE set name = EXCLUDED.name,dishType = EXCLUDED.dishType, price = EXCLUDED.price 
          RETURNING id
-             """;
-     try (Connection conn = new DBConnection().getConnection()){
-         System.out.println("Connexion établie: " + conn);
-         System.out.println("Auto-commit initial: " + conn.getAutoCommit());
-
+         """;
+     try {
+         conn = new DBConnection().getConnection();
          conn.setAutoCommit(false);
          System.out.println("Auto-commit désactivé");
 
@@ -231,6 +228,10 @@ Connection connection;
                  rs.next();
                  dishId = rs.getInt("id");
 
+             }catch(SQLException e){
+                 conn.rollback();
+                 throw e;
+
              }
 
          }
@@ -238,10 +239,19 @@ Connection connection;
          attachIngredient(conn, dishId, dishIngredients );
          detachIngredient(conn, dishId, dishIngredients);
 
+         conn.commit();
 
      } catch (SQLException e) {
          System.err.println("ERROR - No result from UPSERT");
-         throw new RuntimeException(e);
+         if (conn != null) {
+             try {
+                 conn.rollback();
+             } catch (SQLException ex) {
+                 throw new RuntimeException("RolllbackError :" + ex);
+             }
+
+         }
+         throw new RuntimeException("Failed to save dish : " + e);
      }
      return ;
  }
