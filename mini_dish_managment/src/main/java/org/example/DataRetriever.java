@@ -9,12 +9,13 @@ public class DataRetriever {
 DBConnection dbConnection = new DBConnection();
 Connection connection;
 
-    List<DishIngredients> findIngredientbyDishId (int id){
-        List<DishIngredients> ingredients = new ArrayList<>();
+    List<DishIngredients> findDishIngredientbyDishId (int id){
+        List<DishIngredients> dishIngredients = new ArrayList<>();
         try {
             connection = dbConnection.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement("""
            SELECT di.id, i.name, i.price, i.category, di.quantity_required, di.unit, i.id as idIngredient 
+           ,d.id as dishId, d.name as dishName, d.price as dishPrice, d.dishType
            FROM INGREDIENT i  FULL JOIN dishIngredient di ON i.id = di.id JOIN dish d on d.id = di.id 
            WHERE di.id_dish = ?;
 """);
@@ -22,6 +23,7 @@ Connection connection;
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()){
                 Ingredient ingredient = new Ingredient();
+                Dish dish = new Dish();
                 DishIngredients dishIngredient = new DishIngredients();
                 int idIngredientDish = resultSet.getInt("id");
                 int idIngredient = resultSet.getInt("idIngredient");
@@ -30,24 +32,34 @@ Connection connection;
                 CategoryEnum category = CategoryEnum.valueOf(resultSet.getString("category"));
                 Double quantity = resultSet.getDouble("quantity_required");
                 UnitType unit = UnitType.valueOf(resultSet.getString("unit"));
+                int dishId = resultSet.getInt("dishId");
+                String dishName = resultSet.getString("dishName");
+                double dishPrice = resultSet.getDouble("dishPrice");
+                DishtypeEnum dishType = DishtypeEnum.valueOf(resultSet.getString("dishType"));
 
                 ingredient.setId(idIngredient);
                 ingredient.setName(ingredientName);
                 ingredient.setPrice(price);
                 ingredient.setCategory(category);
 
+                dish.setId(dishId);
+                dish.setName(dishName);
+                dish.setPrice(dishPrice);
+                dish.setDishType(dishType);
+
+                dishIngredient.setDish(dish);
                 dishIngredient.setIngredient(ingredient);
                 dishIngredient.setQuantity(quantity);
                 dishIngredient.setUnit(unit);
                 dishIngredient.setId(idIngredientDish);
 
-                ingredients.add(dishIngredient);
+                dishIngredients.add(dishIngredient);
 
             }
 
 
-            System.out.println(ingredients);
-            return ingredients;
+            System.out.println(dishIngredients);
+            return dishIngredients;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

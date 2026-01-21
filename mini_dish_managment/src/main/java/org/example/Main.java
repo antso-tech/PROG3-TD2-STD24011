@@ -4,7 +4,7 @@ public class Main {
     public static void main(String[] args) {
         DataRetriever data = new DataRetriever();
         data.findDishById(4);
-        data.findIngredientbyDishId(4);
+        data.findDishIngredientbyDishId(4);
 
     }
 }
