@@ -14,9 +14,9 @@ Connection connection;
         try {
             connection = dbConnection.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement("""
-           SELECT di.id, i.name, i.price, i.category, di.quantity_required, di.unit, i.id as idIngredient 
+           SELECT di.id, i.name, i.price, i.category, di.quantity_required, di.unit, i.id as idIngredient\s
            ,d.id as dishId, d.name as dishName, d.price as dishPrice, d.dishType
-           FROM INGREDIENT i  FULL JOIN dishIngredient di ON i.id = di.id JOIN dish d on d.id = di.id 
+           FROM INGREDIENT i  FULL JOIN dishIngredient di ON i.id = di.id JOIN dish d on d.id = di.id\s
            WHERE di.id_dish = ?;
 """);
             preparedStatement.setInt(1,id);
@@ -70,11 +70,11 @@ Connection connection;
         try {
             connection = dbConnection.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement("""
-            SELECT d.id as idDish, d.name as dishName, d.dishType, d.price 
+            SELECT d.id as idDish, d.name as dishName, d.dishType, d.price\s
                ,i.name as ingredientName
-            FROM dish d 
-                INNER join dishIngredient dt on d.id = dt.id 
-                INNER JOIN INGREDIENT i on dt.id = i.id 
+            FROM dish d\s
+                INNER join dishIngredient dt on d.id = dt.id\s
+                INNER JOIN INGREDIENT i on dt.id = i.id\s
             where d.id = ?
 """);
 
@@ -204,15 +204,14 @@ Connection connection;
      Connection conn = null;
 
      String updateDishQuery = """
-         INSERT INTO DISH (name, dishType, price) VALUES (?,?::dish_type,?) ON CONFLICT (name) DO 
-         UPDATE set name = EXCLUDED.name,dishType = EXCLUDED.dishType, price = EXCLUDED.price 
-         RETURNING id
-         """;
+         INSERT INTO DISH (name, dishType, price) VALUES (?,?::dish_type,?) ON CONFLICT (name) DO\s
+         UPDATE set name = EXCLUDED.name,dishType = EXCLUDED.dishType, price = EXCLUDED.price\s
+         
+        \s""";
      try {
          conn = new DBConnection().getConnection();
          conn.setAutoCommit(false);
 
-         Integer dishId;
          try (PreparedStatement ps = conn.prepareStatement(updateDishQuery)) {
 
              ps.setString(1, dishToSave.getName());
@@ -224,91 +223,76 @@ Connection connection;
                  ps.setNull(3, Types.DOUBLE);
 
              }
+             int rowNumber = ps.executeUpdate();
 
-             try (ResultSet rs = ps.executeQuery()) {
-                 rs.next();
-                 dishId = rs.getInt(1);
-
-             }catch(SQLException e){
-                 conn.rollback();
-                 throw e;
-
+             System.out.println("row number = " +rowNumber);
+             if (rowNumber > 0){
+                 System.out.println("Votre plat à été mis à jour");
+             }else {
+                 System.out.println("Erreur de transfer");
              }
+
 
          }
          List<DishIngredients> dishIngredients = new ArrayList<>();
-         attachIngredient(conn, dishId, dishIngredients );
-         detachIngredient(conn, dishId, dishIngredients);
+         attachDishIngredient(conn, dishIngredients );
+         detachDishIngredient(conn, dishIngredients);
 
          conn.commit();
          conn.close();
 
      } catch (SQLException e) {
 
-         if (conn != null) {
-             try {
-                 conn.rollback();
-             } catch (SQLException ex) {
-                 throw new RuntimeException("RolllbackError :" + ex);
-             }
-
+         try {
+             conn.rollback();
+         } catch (SQLException ex) {
+             throw new RuntimeException("Roll backError :" + ex);
          }
+
          throw new RuntimeException("Failed to save dish : " + e);
      }
-     return ;
  }
 
-    private void detachIngredient(Connection conn, Integer id, List<DishIngredients> dishIngredients) throws SQLException {
-            if(dishIngredients == null || dishIngredients.isEmpty()){
-                try(PreparedStatement ps = conn.prepareStatement("""
-                UPDATE INGREDIENT SET id = null where id = ?
-            """)){
-                    ps.setInt(1, id);
-                    ps.executeUpdate();
-
-
-                } return;
-            }
-            String baseSQL = """
-                    UPDATE dishIngredient SET id_dish = NULL WHERE id_dish = ? AND id NOT IN (%s)
-                    """;
-
-            String inClause = dishIngredients.stream()
-                    .map(i -> "?")
-                    .collect(Collectors.joining(","));
-
-            String sql = String.format(baseSQL, inClause);
-
-            try (PreparedStatement ps = conn.prepareStatement(sql)){
-                ps.setInt(1, id);
-                int index = 2;
-                for(DishIngredients ingredient : dishIngredients){
-                    ps.setInt(index++, ingredient.getIngredient().getId());
-                }
-                ps.executeUpdate();
-
-            }
-            connection.close();
-    }
-
-    public void attachIngredient(Connection conn, Integer id, List<DishIngredients> dishIngredients) throws SQLException{
-        if (dishIngredients == null || dishIngredients.isEmpty()){
-            return;
-
-        }
-        String attachSQL = """
-                UPDATE dishIngredient set id_dish = ? WHERE id = ?
+    private void detachDishIngredient(Connection conn, List<DishIngredients> dishIngredients) throws SQLException {
+        if (dishIngredients.isEmpty() || dishIngredients == null) {
+            String detachIngredientSQL = """
+               DELETE FROM DishIngredient WHERE id_dish = ? AND id_ingredient = ? ;
                 """;
 
-        try(PreparedStatement ps = conn.prepareStatement(attachSQL)) {
-            for (DishIngredients dishIngredient: dishIngredients){
-                ps.setInt(1, id);
+            PreparedStatement ps = conn.prepareStatement(detachIngredientSQL);
+            for (DishIngredients dishIngredient : dishIngredients){
+
+                ps.setInt(1, dishIngredient.getDish().getId());
                 ps.setInt(2, dishIngredient.getIngredient().getId());
-                ps.addBatch();
 
+                try (ResultSet rs = ps.executeQuery()){
+                    rs.next();
+
+                }
             }
-            ps.executeBatch();
+        }
+    }
 
+    public void attachDishIngredient(Connection conn, List<DishIngredients> dishIngredients) throws SQLException{
+        if (dishIngredients.isEmpty() || dishIngredients == null){
+            String attachDishIngredient = """
+                INSERT INTO DishIngredient (id_dish, id_ingredient, quantity_require, unit)\s
+                VALUES (?,?,?,?)
+               """;
+
+            PreparedStatement ps = conn.prepareStatement(attachDishIngredient);
+            for (DishIngredients dishIngredient : dishIngredients){
+                ps.setInt(1, dishIngredient.getDish().getId());
+                ps.setInt(2, dishIngredient.getIngredient().getId());
+                ps.setDouble(3, dishIngredient.getQuantity());
+                ps.setObject(4, dishIngredient.getUnit().name());
+
+                try(ResultSet rs = ps.executeQuery()) {
+                    rs.next();
+                    System.out.println("Votre code fonctionne !");
+
+                }
+            }
         }
 
     }
@@ -321,12 +305,12 @@ Connection connection;
 
             List<Ingredient> ingredients = new ArrayList<>();
             PreparedStatement ps = connection.prepareStatement("""
-        SELECT d.id as dishId, d.name as dishName, d.dishType, d.price, i.name as ingredientName 
-        from DISH d 
-            INNER JOIN DishIngredient di on d.id = di.id 
+        SELECT d.id as dishId, d.name as dishName, d.dishType, d.price, i.name as ingredientName\s
+        from DISH d\s
+            INNER JOIN DishIngredient di on d.id = di.id\s
             INNER JOIN INGREDIENT i on i.id = di.id
         WHERE i.name ilike ?
-             """);
+            \s""");
 
             ps.setString(1, "%" + IngredientName + "%");
             ResultSet rs = ps.executeQuery();
@@ -369,14 +353,15 @@ Connection connection;
         try{
             int offset = (page - 1) * size;
             PreparedStatement ps = connection.prepareStatement("""
-            SELECT i.id as ingredientId, i.name as ingredientName, i.category, i.price as ingredientPrice, d.name as dishName 
-            FROM INGREDIENT i 
-                LEFT JOIN dishIngredient dt 
-                    ON dt.id = i.id 
-                LEFT JOIN DISH d ON dt.id = d.id  
-            WHERE i.name ilike ? 
-            OR i.category::text ilike 
-            ? OR d.name ilike 
+            SELECT i.id as ingredientId, i.name as ingredientName, i.category,
+                   i.price as ingredientPrice, d.name as dishName\s
+            FROM INGREDIENT i\s
+                LEFT JOIN dishIngredient dt\s
+                    ON dt.id = i.id\s
+                LEFT JOIN DISH d ON dt.id = d.id \s
+            WHERE i.name ilike ?\s
+            OR i.category::text ilike\s
+            ? OR d.name ilike\s
             ? LIMIT ? OFFSET ?
 """);
 
@@ -402,8 +387,7 @@ Connection connection;
                 ingredients.add(ingredient);
 
             }
-
-
+            connection.close();
 
         }catch(SQLException e) {
             throw  new RuntimeException(e);
@@ -418,7 +402,10 @@ Connection connection;
     void createDish(Dish dishParameters){
         Dish dish = new Dish();
         try{
-            String createIngredientQuery = "INSERT INTO DISH (id_dish, name, dish_type, price) VALUES (?,?,?::dish_type,?) RETURNING id_dish, name, dish_type, price";
+            String createIngredientQuery = """
+                INSERT INTO DISH (id_dish, name, dish_type, price)\s
+                VALUES (?,?,?::dish_type,?)\s
+                RETURNING id_dish, name, dish_type, price""";
 
             PreparedStatement ps = connection.prepareStatement(createIngredientQuery);
 
@@ -444,6 +431,7 @@ Connection connection;
 
             System.out.println("Vous avec créez un plat");
             System.out.println(dish);
+            connection.close();
 
         } catch (SQLException e) {
 
