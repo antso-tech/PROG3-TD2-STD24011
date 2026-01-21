@@ -9,6 +9,7 @@ public class Ingredient {
     private CategoryEnum category;
 
 
+
     public Ingredient(){
 
     }

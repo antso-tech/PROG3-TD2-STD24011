@@ -1,4 +1,5 @@
 CREATE TYPE  unit_type AS ENUM ('PCS', 'KG', 'L');
+CREATE TYPE mouvement_type AS ENUM ('IN', 'OUT');
 
 CREATE TABLE DISH (
     id serial primary key,
@@ -23,6 +24,15 @@ CREATE TABLE DishIngredient(
     CONSTRAINT fk_dish FOREIGN KEY (id_dish) REFERENCES DISH(id),
     CONSTRAINT fk_ingredient FOREIGN KEY (id_ingredient) REFERENCES INGREDIENT(id)
 
+);
+
+CREATE TABLE StockMovement(
+    id SERIAL PRIMARY KEY,
+    id_ingredient int,
+    quantity NUMERIC(5,2),
+    type mouvement_type,
+    unit unit_type,
+    creation_datetime TIMESTAMP
 );
 
 INSERT INTO DishIngredient (id_dish, id_ingredient, quantity_required, unit) VALUES 

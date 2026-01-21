@@ -204,14 +204,14 @@ Connection connection;
      Connection conn = null;
 
      String updateDishQuery = """
-         INSERT INTO DISH (name, dishType, price) VALUES (?,?::dish_type,?) ON CONFLICT (name) DO\s
-         UPDATE set name = EXCLUDED.name,dishType = EXCLUDED.dishType, price = EXCLUDED.price\s
-         
-        \s""";
+         INSERT INTO DISH (name, dishType, price) VALUES (?,?::dish_type,?) ON CONFLICT (name) DO
+         UPDATE set name = EXCLUDED.name,dishType = EXCLUDED.dishType, price = EXCLUDED.price
+         RETURNING id
+        """;
      try {
          conn = new DBConnection().getConnection();
          conn.setAutoCommit(false);
-
+         int dishId;
          try (PreparedStatement ps = conn.prepareStatement(updateDishQuery)) {
 
              ps.setString(1, dishToSave.getName());
@@ -223,20 +223,16 @@ Connection connection;
                  ps.setNull(3, Types.DOUBLE);
 
              }
-             int rowNumber = ps.executeUpdate();
+             try(ResultSet rs = ps.executeQuery()){
+                 rs.next();
+                 dishId = rs.getInt("id");
 
-             System.out.println("row number = " +rowNumber);
-             if (rowNumber > 0){
-                 System.out.println("Votre plat à été mis à jour");
-             }else {
-                 System.out.println("Erreur de transfer");
              }
-
 
          }
          List<DishIngredients> dishIngredients = new ArrayList<>();
-         attachDishIngredient(conn, dishIngredients );
-         detachDishIngredient(conn, dishIngredients);
+         attachDishIngredient(conn, dishId,dishIngredients );
+         detachDishIngredient(conn, dishId,dishIngredients);
 
          conn.commit();
          conn.close();
@@ -253,7 +249,8 @@ Connection connection;
      }
  }
 
-    private void detachDishIngredient(Connection conn, List<DishIngredients> dishIngredients) throws SQLException {
+    private void detachDishIngredient(Connection conn, int dish, List<DishIngredients> dishIngredients)
+            throws SQLException {
         if (dishIngredients.isEmpty() || dishIngredients == null) {
             String detachIngredientSQL = """
                DELETE FROM DishIngredient WHERE id_dish = ? AND id_ingredient = ? ;
@@ -262,7 +259,7 @@ Connection connection;
             PreparedStatement ps = conn.prepareStatement(detachIngredientSQL);
             for (DishIngredients dishIngredient : dishIngredients){
 
-                ps.setInt(1, dishIngredient.getDish().getId());
+                ps.setInt(1, dish);
                 ps.setInt(2, dishIngredient.getIngredient().getId());
 
                 try (ResultSet rs = ps.executeQuery()){
@@ -273,7 +270,8 @@ Connection connection;
         }
     }
 
-    public void attachDishIngredient(Connection conn, List<DishIngredients> dishIngredients) throws SQLException{
+    public void attachDishIngredient(Connection conn, int dishId, List<DishIngredients> dishIngredients)
+            throws SQLException{
         if (dishIngredients.isEmpty() || dishIngredients == null){
             String attachDishIngredient = """
                 INSERT INTO DishIngredient (id_dish, id_ingredient, quantity_require, unit)\s
@@ -282,7 +280,7 @@ Connection connection;
 
             PreparedStatement ps = conn.prepareStatement(attachDishIngredient);
             for (DishIngredients dishIngredient : dishIngredients){
-                ps.setInt(1, dishIngredient.getDish().getId());
+                ps.setInt(1, dishId);
                 ps.setInt(2, dishIngredient.getIngredient().getId());
                 ps.setDouble(3, dishIngredient.getQuantity());
                 ps.setObject(4, dishIngredient.getUnit().name());
