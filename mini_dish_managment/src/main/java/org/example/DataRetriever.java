@@ -14,14 +14,13 @@ Connection connection;
         try {
             connection = dbConnection.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement("""
-           SELECT di.id, i.name, i.price, i.category, di.quantity_required, di.unit, d.name, i.id as idIngredient 
+           SELECT di.id, i.name, i.price, i.category, di.quantity_required, di.unit, i.id as idIngredient 
            FROM INGREDIENT i  FULL JOIN dishIngredient di ON i.id = di.id JOIN dish d on d.id = di.id 
            WHERE di.id_dish = ?;
 """);
             preparedStatement.setInt(1,id);
-
             ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()){
+            while (resultSet.next()){
                 Ingredient ingredient = new Ingredient();
                 DishIngredients dishIngredient = new DishIngredients();
                 int idIngredientDish = resultSet.getInt("id");
@@ -42,10 +41,12 @@ Connection connection;
                 dishIngredient.setUnit(unit);
                 dishIngredient.setId(idIngredientDish);
 
-                System.out.println(dishIngredient);
+                ingredients.add(dishIngredient);
 
             }
 
+
+            System.out.println(ingredients);
             return ingredients;
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -60,8 +61,8 @@ Connection connection;
             SELECT d.id as idDish, d.name as dishName, d.dishType, d.price 
                ,i.name as ingredientName
             FROM dish d 
-                left join dishIngredient dt on d.id = dt.id 
-                LEFT JOIN INGREDIENT i on dt.id = d.id 
+                INNER join dishIngredient dt on d.id = dt.id 
+                INNER JOIN INGREDIENT i on dt.id = i.id 
             where d.id = ?
 """);
 
@@ -69,7 +70,7 @@ Connection connection;
             ResultSet rs = preparedStatement.executeQuery();
 
 
-            if (rs.next()){
+            while (rs.next()){
                     dish = new Dish();
                     Ingredient ingredient = new Ingredient();
                     int idDish = rs.getInt("idDish");
@@ -82,9 +83,6 @@ Connection connection;
                     dish.setPrice(rs.getObject("price") == null ? null : rs.getDouble("price"));
 
                 System.out.println(dish);
-
-            }else {
-                throw new RuntimeException("Erreur : l'Id n'existe pas ");
 
             }
 
@@ -121,6 +119,7 @@ Connection connection;
             }
 
 
+            connection.close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -230,6 +229,7 @@ Connection connection;
          detachIngredient(conn, dishId, dishIngredients);
 
          conn.commit();
+         conn.close();
 
      } catch (SQLException e) {
 
@@ -276,6 +276,7 @@ Connection connection;
                 ps.executeUpdate();
 
             }
+            connection.close();
     }
 
     public void attachIngredient(Connection conn, Integer id, List<DishIngredients> dishIngredients) throws SQLException{
@@ -337,6 +338,7 @@ Connection connection;
 
             }
             dishes.add(dish);
+            connection.close();
 
 
         } catch (SQLException e) {
