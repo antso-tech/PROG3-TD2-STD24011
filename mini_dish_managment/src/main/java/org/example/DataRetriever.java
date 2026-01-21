@@ -141,7 +141,6 @@ Connection connection;
                 ResultSet rsCheck = checkStatement.executeQuery();
 
                 if (rsCheck.next()){
-                    System.out.println("ingredient déjà existant");
                     continue;
                 }
                 try {
@@ -202,31 +201,23 @@ Connection connection;
      try {
          conn = new DBConnection().getConnection();
          conn.setAutoCommit(false);
-         System.out.println("Auto-commit désactivé");
 
          Integer dishId;
          try (PreparedStatement ps = conn.prepareStatement(updateDishQuery)) {
-             System.out.println("Requête préparée: " + ps.toString());
 
-             System.out.println("DEBUG - Executing UPSERT for: " + dishToSave.getName());
              ps.setString(1, dishToSave.getName());
              ps.setString(2, dishToSave.getDishType().name());
              if (dishToSave.getPrice() != null) {
-                 System.out.println("Paramètres: name=" + dishToSave.getName()
-                         + ", type=" + dishToSave.getDishType().name()
-                         + ", price=" + dishToSave.getPrice());
+
                  ps.setDouble(3, dishToSave.getPrice());
              } else {
                  ps.setNull(3, Types.DOUBLE);
-                 System.out.println("Paramètres: name=" + dishToSave.getName()
-                         + ", type=" + dishToSave.getDishType().name()
-                         + ", price=NULL");
+
              }
-             System.out.println("Exécution de la requête...");
+
              try (ResultSet rs = ps.executeQuery()) {
-                 System.out.println("Requête exécutée");
                  rs.next();
-                 dishId = rs.getInt("id");
+                 dishId = rs.getInt(1);
 
              }catch(SQLException e){
                  conn.rollback();
@@ -242,7 +233,7 @@ Connection connection;
          conn.commit();
 
      } catch (SQLException e) {
-         System.err.println("ERROR - No result from UPSERT");
+
          if (conn != null) {
              try {
                  conn.rollback();
