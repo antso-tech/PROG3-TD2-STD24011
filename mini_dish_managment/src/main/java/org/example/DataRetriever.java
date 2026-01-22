@@ -446,7 +446,7 @@ Connection connection;
             Ingredient ingredient = new Ingredient();
 
             String saveIngredientSQL = """
-                INSERT INTO INGREDIENT (id,name, price, category) VALUES  (?,?, ?, ?::ingredient_category)
+                INSERT INTO INGREDIENT (id , name, price, category) VALUES  (?,?, ?, ?::ingredient_category)
                 ON CONFLICT (name)
                 DO NOTHING
                """;

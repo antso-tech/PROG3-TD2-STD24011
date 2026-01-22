@@ -1,5 +1,6 @@
 package org.example;
 
+import java.time.Instant;
 import java.util.List;
 
 public class Main {
@@ -35,11 +36,27 @@ public class Main {
         Ingredient fromage = new Ingredient(7, "Fromage",1200.00,CategoryEnum.DAIRY);
         DishIngredients dishIngredient6 = new DishIngredients(6, saladeFraiche,oignon,0.15, UnitType.KG);
         DishIngredients dishIngredient7 = new DishIngredients(7, saladeFraiche, fromage, 0.18, UnitType.KG);
+        StockValue stockValue1 = new StockValue(5.00, UnitType.KG);
+        StockValue stockValue2 = new StockValue(0.20, UnitType.KG);
+        StockValue stockValue3 = new StockValue(4.00, UnitType.KG);
+        StockValue stockValue4 = new StockValue(0.15, UnitType.KG);
+        StockValue stockValue5 = new StockValue(10.0, UnitType.KG);
+        StockValue stockValue6 = new StockValue(1.0, UnitType.KG);
+        StockMovement stockMovement1 = new StockMovement(1, MovementTypeEnum.IN,stockValue1,Instant.parse("2024-01-05T08:00:00"));
+        StockMovement stockMovement2 = new StockMovement(2, MovementTypeEnum.OUT,stockValue2, Instant.parse("2024-01-06T12:00:00"));
+        StockMovement stockMovement3 = new StockMovement(3, MovementTypeEnum.IN, stockValue3, Instant.parse("2024-01-05T08:00:00"));
+        StockMovement stockMovement4 = new StockMovement(4, MovementTypeEnum.OUT, stockValue4, Instant.parse("2024-01-06T12:00:00"));
+        StockMovement stockMovement5 = new StockMovement(5, MovementTypeEnum.IN, stockValue5, Instant.parse("2024-01-04T09:00:00"));
+        StockMovement stockMovement6 = new StockMovement(6, MovementTypeEnum.OUT, stockValue6, Instant.parse("2024-01-06 13:00:00"));
+        List<StockMovement> stockMovementLaitue = List.of(stockMovement1, stockMovement2);
+        List<StockMovement> stockMovementTomate = List.of(stockMovement3, stockMovement4);
+        List<StockMovement> stockMovementPoulet = List.of(stockMovement5, stockMovement6);
+        laitue.setStockMovementList(stockMovementLaitue);
+        laitue.setStockMovementList(stockMovementTomate);
+        laitue.setStockMovementList(stockMovementPoulet);
         saladeFraiche.setDishIngredients(List.of(dishIngredients1, dishIngredients2, dishIngredient6, dishIngredient7));
         data.saveDish(saladeFraiche);
         data.saveIngredient(boeuf);
-
-
 
     }
 }
