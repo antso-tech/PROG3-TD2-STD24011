@@ -1,7 +1,9 @@
 package org.example;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class Ingredient {
     private int id;
@@ -84,10 +86,16 @@ public class Ingredient {
                 '}';
     }
 
-    void getStockValue(){
-        return ;
+    List<StockValue> getStockValue(Instant t){
+        return stockMovementList
+                .stream()
+                .filter(e -> e.getCreationDateTime().equals(t))
+                .map(StockMovement::getValue)
+                .collect(Collectors.toList());
 
     }
+
+
 
 
 }

@@ -88,4 +88,8 @@ public class DishIngredients {
                 ", unit=" + unit +
                 '}';
     }
+
+    double getStock(){
+        return ingredient.getStockMovementList().stream().mapToDouble( s ->  s.getValue().getValue()).sum() - getQuantity();
+    }
 }

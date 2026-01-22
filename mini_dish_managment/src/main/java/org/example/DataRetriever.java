@@ -439,14 +439,40 @@ Connection connection;
     }
 
     public Ingredient saveIngredient(Ingredient toSave){
-        Ingredient ingredient = new Ingredient();
+        Connection conn = null;
+        try{
+            conn = new DBConnection().getConnection();
+            conn.setAutoCommit(false);
+            Ingredient ingredient = new Ingredient();
 
-        String saveIngredient = """
-                INSERT INTO (name, price, category) VALUES  (?, ?, ?::ingredient_category) ON CONFLICT (name)
-                DO NOTHING 
-                """;
+            String saveIngredientSQL = """
+                INSERT INTO (id,name, price, category) VALUES  (?,?, ?, ?::ingredient_category)\s
+                ON CONFLICT (name)
+                DO NOTHING\s
+               \s""";
 
+            PreparedStatement ps = connection.prepareStatement(saveIngredientSQL);
+            ps.setInt(1, toSave.getId());
+            ps.setString(2, toSave.getName());
+            ps.setDouble(3, toSave.getPrice());
+            ps.setString(4, toSave.getCategory().name());
 
-        return ingredient;
+            ResultSet rs = ps.getResultSet();
+            if (rs.next()){
+                System.out.println("Votre plat a été mis à jour !");
+            }
+
+            conn.commit();
+            conn.close();
+            return ingredient;
+        }catch (SQLException e){
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+            throw new RuntimeException(e);
+        }
+
     }
 }
