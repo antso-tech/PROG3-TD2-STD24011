@@ -437,4 +437,16 @@ Connection connection;
         }
 
     }
+
+    public Ingredient saveIngredient(Ingredient toSave){
+        Ingredient ingredient = new Ingredient();
+
+        String saveIngredient = """
+                INSERT INTO (name, price, category) VALUES  (?, ?, ?::ingredient_category) ON CONFLICT (name)
+                DO NOTHING 
+                """;
+
+
+        return ingredient;
+    }
 }

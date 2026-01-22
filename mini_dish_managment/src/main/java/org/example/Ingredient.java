@@ -1,5 +1,6 @@
 package org.example;
 
+import java.util.List;
 import java.util.Objects;
 
 public class Ingredient {
@@ -7,8 +8,7 @@ public class Ingredient {
     private String name;
     private double price;
     private CategoryEnum category;
-
-
+    private List<StockMovement> stockMovementList;
 
     public Ingredient(){
 
@@ -53,6 +53,14 @@ public class Ingredient {
         this.category = category;
     }
 
+    public List<StockMovement> getStockMovementList() {
+        return stockMovementList;
+    }
+
+    public void setStockMovementList(List<StockMovement> stockMovementList) {
+        this.stockMovementList = stockMovementList;
+    }
+
 
     @Override
     public boolean equals(Object o) {
@@ -74,6 +82,11 @@ public class Ingredient {
                 ", price=" + price +
                 ", category=" + category +
                 '}';
+    }
+
+    void getStockValue(){
+        return ;
+
     }
 
 

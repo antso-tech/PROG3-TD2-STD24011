@@ -26,26 +26,11 @@ CREATE TABLE DishIngredient(
 
 );
 
-CREATE TABLE StockMovement(
-    id SERIAL PRIMARY KEY,
-    id_ingredient int,
-    quantity NUMERIC(5,2),
-    type mouvement_type,
-    unit unit_type,
-    creation_datetime TIMESTAMP
-);
-
 INSERT INTO DishIngredient (id_dish, id_ingredient, quantity_required, unit) VALUES 
 (1,1,0.20,'KG'), (1,2,0.15,'KG'),(2,3,1.00,'KG'),
 (4,4,0.30,'KG'),(4,5,0.20,'KG');
 
-SELECT d.id as dishId, d.name as dishName, d.dishType, d.price, i.name as ingredientName from DISH d LEFT JOIN DishIngredient di on d.id = di.id LEFT JOIN INGREDIENT i on i.id = di.id WHERE i.name ilike '%tom%';
-
-SELECT i.id as ingredientId, i.name as ingredientName, i.category, i.price, d.name as dishName FROM INGREDIENT i LEFT JOIN dishIngredient dt ON dt.id = i.id LEFT JOIN DISH d ON dt.id = d.id  WHERE i.name ilike null OR i.category::text ilike NULL OR d.name ilike '%Sal%' LIMIT 3 OFFSET 2;
-SELECT d.id as idDish, d.name as dishName, d.dishType, d.price ,i.name as ingredientName FROM dish d left join dishIngredient dt on d.id = dt.id LEFT JOIN INGREDIENT i on dt.id = d.id;
-
-SELECT id, name, price, category from ingredient;
-
+INSERT INTO 
 INSERT INTO DISH (name,dishType, price) VALUES 
 ('Salade Fraîche', 'STARTER', 3500.00),
 ('Poulet grillé', 'MAIN', 12000.00), 
@@ -60,10 +45,25 @@ INSERT INTO INGREDIENT (name, price, category) VALUES
 ('Chocolat', 3000.00,'OTHER'),
 ('Beurre',2500.00, 'DAIRY');
 
-SELECT * FROM INGREDIENT;
-select * from DISH;
-SELECT * from DISHINGREDIENT;
 
+CREATE TABLE StockMovement(
+    id SERIAL PRIMARY KEY,
+    id_ingredient int,
+    quantity NUMERIC(5,2),
+    type mouvement_type,
+    unit unit_type,
+    creation_datetime TIMESTAMP
+);
 
-SELECT i.id, i.name, i.price, i.category, di.quantity_required, di.unit, d.name FROM INGREDIENT i  FULL JOIN dishIngredient di ON i.id = di.id JOIN dish d on d.id = di.id WHERE di.id_dish = 1;
-
+INSERT INTO StockMovement (id_ingredient, quantity, type, unit, creation_datetime) 
+VALUES 
+(1, 5.00, 'IN', 'KG', '2024-01-05 08:00:00'),
+(1, 0.20, 'OUT', 'KG', '2024-01-06 12:00:00'),
+(2, 4.00, 'IN', 'KG', '2024-01-05 08:00:00'),
+(2, 0.15, 'OUT', 'KG', '2024-01-06 12:00:00'),
+(3, 10.00, 'IN', 'KG', '2024-01-04 09:00:00'),
+(3, 1.00, 'OUT', 'KG', '2024-01-06 13:00:00'),
+(4, 3.00, 'IN', 'KG', '2024-01-05 10:00:00'),
+(4, 0.30, 'OUT', 'KG', '2024-01-06 14:00:00'),
+(5, 2.50, 'IN', 'KG', '2024-01-05 10:00:00'),
+(5, 0.20, 'OUT', 'KG', '2024-01-06 14:00:00');
