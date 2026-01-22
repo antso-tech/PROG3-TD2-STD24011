@@ -17,6 +17,7 @@ public class Main {
         Ingredient poulet = new Ingredient(3 ,"Poulet", 3000.00, CategoryEnum.ANIMAL);
         Ingredient chocolat = new Ingredient(4, "Chocolat", 3000.00, CategoryEnum.OTHER);
         Ingredient beurre = new Ingredient( 5, "Beurre", 2500.00, CategoryEnum.DAIRY);
+        Ingredient boeuf = new Ingredient(6, "Boeuf", 134.00, CategoryEnum.ANIMAL);
         DishIngredients dishIngredients1 = new DishIngredients( 1 ,saladeFraiche, laitue, 0.20, UnitType.KG);
         DishIngredients dishIngredients2 = new DishIngredients(2,saladeFraiche, tomate, 0.15, UnitType.KG);
         DishIngredients dishIngredients3 = new DishIngredients(3, pouletGrille,poulet,1.00 , UnitType.KG);
@@ -36,7 +37,7 @@ public class Main {
         DishIngredients dishIngredient7 = new DishIngredients(7, saladeFraiche, fromage, 0.18, UnitType.KG);
         saladeFraiche.setDishIngredients(List.of(dishIngredients1, dishIngredients2, dishIngredient6, dishIngredient7));
         data.saveDish(saladeFraiche);
-
+        data.saveIngredient(boeuf);
 
 
 

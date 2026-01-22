@@ -52,8 +52,10 @@ CREATE TABLE StockMovement(
     quantity NUMERIC(5,2),
     type mouvement_type,
     unit unit_type,
-    creation_datetime TIMESTAMP
+    creation_datetime TIMESTAMP,
+    CONSTRAINT fk_ingredient FOREIGN KEY (id_ingredient) REFERENCES INGREDIENT(id)
 );
+
 
 INSERT INTO StockMovement (id_ingredient, quantity, type, unit, creation_datetime) 
 VALUES 
@@ -67,3 +69,7 @@ VALUES
 (4, 0.30, 'OUT', 'KG', '2024-01-06 14:00:00'),
 (5, 2.50, 'IN', 'KG', '2024-01-05 10:00:00'),
 (5, 0.20, 'OUT', 'KG', '2024-01-06 14:00:00');
+
+SELECT i.name, i.price, i.category from INGREDIENT i LEFT JOIN StockMovement s on i.id = s.id_ingredient
+
+ALTER TABLE INGREDIENT ADD CONSTRAINT user_email_unique UNIQUE (email);

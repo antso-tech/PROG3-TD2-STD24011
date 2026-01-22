@@ -446,10 +446,10 @@ Connection connection;
             Ingredient ingredient = new Ingredient();
 
             String saveIngredientSQL = """
-                INSERT INTO (id,name, price, category) VALUES  (?,?, ?, ?::ingredient_category)\s
+                INSERT INTO INGREDIENT (id,name, price, category) VALUES  (?,?, ?, ?::ingredient_category)
                 ON CONFLICT (name)
-                DO NOTHING\s
-               \s""";
+                DO NOTHING
+               """;
 
             PreparedStatement ps = connection.prepareStatement(saveIngredientSQL);
             ps.setInt(1, toSave.getId());
@@ -457,7 +457,7 @@ Connection connection;
             ps.setDouble(3, toSave.getPrice());
             ps.setString(4, toSave.getCategory().name());
 
-            ResultSet rs = ps.getResultSet();
+            ResultSet rs = ps.executeQuery();
             if (rs.next()){
                 System.out.println("Votre plat a été mis à jour !");
             }
@@ -467,7 +467,7 @@ Connection connection;
             return ingredient;
         }catch (SQLException e){
             try {
-                connection.rollback();
+                conn.rollback();
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }

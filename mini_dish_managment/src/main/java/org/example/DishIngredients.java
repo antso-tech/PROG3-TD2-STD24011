@@ -90,6 +90,9 @@ public class DishIngredients {
     }
 
     double getStock(){
-        return ingredient.getStockMovementList().stream().mapToDouble( s ->  s.getValue().getValue()).sum() - getQuantity();
+        return ingredient.getStockMovementList()
+                .stream()
+                .mapToDouble( s ->  s.getValue()
+                        .getValue()).sum() - getQuantity();
     }
 }
