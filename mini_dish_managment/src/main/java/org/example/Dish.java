@@ -122,7 +122,7 @@ public class Dish {
                 ", name='" + name + '\'' +
                 ", DishType=" + dishType +
                 ", Price=" + price +
-                ", Ingredients=" + dishIngredients +
+                ", DishIngredients=" + dishIngredients +
                 '}';
     }
 

@@ -83,7 +83,6 @@ public class DishIngredients {
     public String toString() {
         return "DishIngredients{" +
                 "id=" + id +
-                ", dish=" + dish +
                 ", ingredient=" + ingredient +
                 ", quantity=" + quantity +
                 ", unit=" + unit +

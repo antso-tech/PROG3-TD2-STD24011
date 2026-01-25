@@ -7,8 +7,6 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) {
         DataRetriever data = new DataRetriever();
-        data.findDishById(4);
-        data.findDishIngredientbyDishId(4);
         Dish saladeFraiche = new Dish(1, "Salade Fraîche",DishtypeEnum.STARTER,3500.0);
         Dish pouletGrille = new Dish(2, "Poulet grillé", DishtypeEnum.MAIN,12000.00);
         Dish gateauxChocolat = new Dish(4,"Gâteaux aux chocolat", DishtypeEnum.DESSERT,8000.00);
@@ -25,6 +23,9 @@ public class Main {
         DishIngredients dishIngredients3 = new DishIngredients(3, pouletGrille,poulet,1.00 , UnitType.KG);
         DishIngredients dishIngredients4 = new DishIngredients(4, gateauxChocolat, chocolat, 0.30, UnitType.KG);
         DishIngredients dishIngredients5 = new DishIngredients(5,gateauxChocolat, beurre, 0.20, UnitType.KG);
+        data.findDishById(3);
+        System.out.println("ingredient by dish Id :");
+        data.findDishIngredientbyDishId(2);
         System.out.println(saladeFraiche.getDishCost());
         System.out.println(saladeFraiche.getMarginGross());
         pouletGrille.setDishIngredients(List.of(dishIngredients3));
@@ -73,6 +74,7 @@ public class Main {
         List<DishOrder> dishOrder = List.of(dishOrder1, dishOrder2,dishOrder3);
         order.setDishOrder(dishOrder);
         order.getTotalAmountWithoutVAT();
+
 
 
     }
