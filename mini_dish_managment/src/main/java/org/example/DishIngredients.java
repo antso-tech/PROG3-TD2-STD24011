@@ -1,5 +1,6 @@
 package org.example;
 
+import java.util.List;
 import java.util.Objects;
 
 public class DishIngredients {
@@ -90,9 +91,13 @@ public class DishIngredients {
     }
 
     double getStock(){
-        return ingredient.getStockMovementList()
+        System.out.println(getIngredient().getName());
+        List<Double> stockList = ingredient.getStockMovementList()
                 .stream()
-                .mapToDouble( s ->  s.getValue()
-                        .getValue()).sum() - getQuantity();
+                .map( s ->  s.getValue()
+                        .getValue()).toList();
+
+            return stockList.get(0) - stockList.get(1);
+
     }
 }

@@ -66,6 +66,7 @@ Connection connection;
     }
 
     void findDishById(int id){
+        List<DishIngredients> dishIngredients;
         Dish dish;
         try {
             connection = dbConnection.getConnection();
@@ -87,12 +88,16 @@ Connection connection;
                     Ingredient ingredient = new Ingredient();
                     int idDish = rs.getInt("idDish");
                     String dishName = rs.getString("dishName");
+                    String ingredientName = rs.getString("ingredientName");
                     DishtypeEnum type = DishtypeEnum.valueOf(rs.getString("dishType"));
+
 
                     dish.setId(idDish);
                     dish.setName(dishName);
                     dish.setDishType(type);
                     dish.setPrice(rs.getObject("price") == null ? null : rs.getDouble("price"));
+                    ingredient.setName(ingredientName);
+
 
                 System.out.println(dish);
 
@@ -137,67 +142,6 @@ Connection connection;
         }
         System.out.println(ingredients);
         return ingredients;
-    }
-
-    List<Ingredient> createIngredients(List<Ingredient> newIngredients){
-        List<Ingredient> newIngredientData = new ArrayList<>();
-        try{
-            String checkIngredient = "SELECT id from ingredient where id = ?";
-            String createIngredientQuery = "INSERT INTO INGREDIENT (id, name, price, category,id_dish) VALUES ( ?, ?, ?, ?::dish_category,?) RETURNING *";
-            connection.setAutoCommit(false);
-
-
-            for (int i = 0; i < newIngredients.size(); i++) {
-                PreparedStatement checkStatement = connection.prepareStatement(checkIngredient);
-                checkStatement.setInt(1,newIngredients.get(i).getId());
-                ResultSet rsCheck = checkStatement.executeQuery();
-
-                if (rsCheck.next()){
-                    continue;
-                }
-                try {
-                    PreparedStatement ps = connection.prepareStatement(createIngredientQuery);
-                    ps.setInt(1, newIngredients.get(i).getId());
-                    ps.setString(2, newIngredients.get(i).getName());
-                    ps.setDouble(3, newIngredients.get(i).getPrice());
-                    ps.setObject(4, newIngredients.get(i).getCategory().name());
-
-
-                    ResultSet rs = ps.executeQuery();
-                    Ingredient ingredient = new Ingredient();
-
-
-                    while (rs.next()) {
-                        int idIngredient = rs.getInt("id");
-                        String name = rs.getString("name");
-                        Double price = rs.getDouble("price");
-                        CategoryEnum category = CategoryEnum.valueOf(rs.getString("category"));
-
-                        ingredient.setId(idIngredient);
-                        ingredient.setName(name);
-                        ingredient.setPrice(price);
-                        ingredient.setCategory(category);
-
-
-                    }
-
-                    newIngredientData.add(ingredient);
-
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            connection.commit();
-
-        } catch (Exception e) {
-            try {
-                connection.rollback();
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            }
-            throw new RuntimeException(e);
-        }
-        return newIngredientData;
     }
 
  void saveDish(Dish dishToSave) {
@@ -447,7 +391,7 @@ Connection connection;
 
             String saveIngredientSQL = """
                 INSERT INTO INGREDIENT (id , name, price, category) VALUES  (?,?, ?, ?::ingredient_category)
-                ON CONFLICT (name)
+                ON CONFLICT (id)
                 DO NOTHING
                """;
 
@@ -474,5 +418,9 @@ Connection connection;
             throw new RuntimeException(e);
         }
 
+    }
+
+    public Order findOrderByReference(String reference) {
+        throw  new RuntimeException("Not implemented");
     }
 }

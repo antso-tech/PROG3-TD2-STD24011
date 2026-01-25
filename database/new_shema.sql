@@ -25,18 +25,22 @@ CREATE TABLE DishIngredient(
     CONSTRAINT fk_ingredient FOREIGN KEY (id_ingredient) REFERENCES INGREDIENT(id)
 
 );
-
+DELETE from DISH;
 INSERT INTO DishIngredient (id_dish, id_ingredient, quantity_required, unit) VALUES 
 (1,1,0.20,'KG'), (1,2,0.15,'KG'),(2,3,1.00,'KG'),
 (4,4,0.30,'KG'),(4,5,0.20,'KG');
 
-INSERT INTO 
+
 INSERT INTO DISH (name,dishType, price) VALUES 
 ('Salade Fraîche', 'STARTER', 3500.00),
 ('Poulet grillé', 'MAIN', 12000.00), 
 ('Riz aux légumes', 'MAIN', NULL),
 ('Gâteaux aux chocolat', 'DESSERT', 8000.00),
 ('Salade de fruits', 'DESSERT', NULL);
+
+SELECT * from dish;
+SELECT nextval('stockmovement_id_seq');
+ALTER SEQUENCE stockmovement_id_seq RESTART WITH 1;
 
 INSERT INTO INGREDIENT (name, price, category) VALUES 
 ('Laitue', 800.00,'VEGETABLE'),
@@ -70,6 +74,27 @@ VALUES
 (5, 2.50, 'IN', 'KG', '2024-01-05 10:00:00'),
 (5, 0.20, 'OUT', 'KG', '2024-01-06 14:00:00');
 
+
 SELECT i.name, i.price, i.category from INGREDIENT i LEFT JOIN StockMovement s on i.id = s.id_ingredient
 
 ALTER TABLE INGREDIENT ADD CONSTRAINT user_email_unique UNIQUE (email);
+
+CREATE TABLE ORDER(
+    id serial primary key,
+    reference varchar(255),
+    creation_datetime TIMESTAMP
+);
+
+CREATE TABLE DISHORDER(
+    id serial PRIMARY KEY,
+    id_dish int,
+    id_ingredient int, 
+    CONSTRAINT fk_dish FOREIGN KEY (id_dish) REFERENCES DISH(id),
+    CONSTRAINT fk_ingredient FOREIGN KEY (id_ingredient) REFERENCES DISH(id),
+    quantity numeric(4,2)
+)
+
+select * FROM DISHORDER;
+
+SELECT * from stockMovement;
+

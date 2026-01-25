@@ -59,6 +59,7 @@ public class Dish {
 
 
     public double getMarginGross(){
+        System.out.println("La marge de " + getName());
         if (getPrice() == null){
             throw new RuntimeException("Le prix du plat est null ");
         }
@@ -67,6 +68,7 @@ public class Dish {
     }
 
     public Double getDishCost(){
+        System.out.println("Le coût de " + getName());
         double totalPrice = 0;
         for (int i = 0; i < dishIngredients.size(); i++) {
             Double quantity = dishIngredients.get(i).getQuantity();
@@ -78,6 +80,7 @@ public class Dish {
             }
 
         }
+
         return totalPrice;
 
     }
@@ -122,5 +125,6 @@ public class Dish {
                 ", Ingredients=" + dishIngredients +
                 '}';
     }
+
 
 }
