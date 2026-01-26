@@ -155,7 +155,7 @@ Connection connection;
                 Ingredient ingredient = new Ingredient();
                 int idIngredient = rs.getInt("id");
                 String nameIngredient = rs.getString("name");
-                Long priceIngredient = rs.getLong("price");
+                long priceIngredient = rs.getLong("price");
                 CategoryEnum category = CategoryEnum.valueOf(rs.getString("category"));
 
 
@@ -184,6 +184,7 @@ Connection connection;
          UPDATE set name = EXCLUDED.name,dishType = EXCLUDED.dishType, price = EXCLUDED.price
          RETURNING id
         """;
+
      try {
          conn = new DBConnection().getConnection();
          conn.setAutoCommit(false);
@@ -210,7 +211,7 @@ Connection connection;
 
          detachDishIngredient(conn, dishId);
 
-         if (dishIngredients != null || !dishIngredients.isEmpty()){
+         if (dishIngredients != null && !dishIngredients.isEmpty()){
              attachDishIngredient(conn,dishId,dishIngredients);
          }
 
@@ -248,8 +249,10 @@ Connection connection;
 
             String attachDishIngredient = """
                 INSERT INTO DishIngredient (id_dish, id_ingredient, quantity_required, unit)\s
-                VALUES (?,?,?,?)
+                VALUES (?,?,?,?::unit_type)
                """;
+
+            createIngredient(conn, dishIngredients);
 
             PreparedStatement ps = conn.prepareStatement(attachDishIngredient);
             for (DishIngredients dishIngredient : dishIngredients){
@@ -374,7 +377,7 @@ Connection connection;
             String createIngredientQuery = """
                 INSERT INTO DISH (id_dish, name, dish_type, price)\s
                 VALUES (?,?,?::dish_type,?)\s
-                RETURNING id_dish, name, dish_type, price""";
+                RETURNING id_dish, name, dish_type, price ON CONFLICT DO NOTHING""";
 
             PreparedStatement ps = connection.prepareStatement(createIngredientQuery);
 
@@ -418,7 +421,7 @@ Connection connection;
 
             String saveIngredientSQL = """
                 INSERT INTO INGREDIENT (id , name, price, category) VALUES  (?,?, ?, ?::ingredient_category)
-                ON CONFLICT (id)
+                ON CONFLICT (id, name, price, category)
                 DO NOTHING
                """;
 
@@ -446,6 +449,41 @@ Connection connection;
         }
 
     }
+
+    public void createIngredient(Connection conn, List<DishIngredients> dishIngredients){
+        if (dishIngredients == null || dishIngredients.isEmpty()) {
+            System.out.println("Aucun ingrédient à créer");
+            return;
+        }
+
+        String newIngredientSQL = """
+    INSERT INTO ingredient (name, price, category)
+    SELECT ?,?,?::ingredient_category WHERE not exists (SELECT 1 from ingredient where name = ?)
+    """;
+        try{
+            conn.setAutoCommit(false);
+
+            PreparedStatement ps = conn.prepareStatement(newIngredientSQL);
+            for(DishIngredients dishIngredient : dishIngredients ){
+                ps.setString(1, dishIngredient.getIngredient().getName());
+                ps.setDouble(2,dishIngredient.getIngredient().getPrice());
+                ps.setObject(3, dishIngredient.getIngredient().getCategory().name());
+                ps.setString(4, dishIngredient.getIngredient().getName());
+                ps.addBatch();
+            }
+           int[] rowAffected = ps.executeBatch();
+
+
+            conn.commit();
+            System.out.println("Nouvelle ingredient ajoutée :" + rowAffected.length);
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+
 
     public Order findOrderByReference(String reference) {
         throw new RuntimeException("Not implemented");

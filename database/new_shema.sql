@@ -8,6 +8,7 @@ CREATE TABLE DISH (
     price NUMERIC(10,2)
 );
 
+
 CREATE TABLE INGREDIENT(
     id serial PRIMARY KEY,
     name VARCHAR(255),
@@ -38,7 +39,10 @@ INSERT INTO DISH (name,dishType, price) VALUES
 ('Gâteaux aux chocolat', 'DESSERT', 8000.00),
 ('Salade de fruits', 'DESSERT', NULL);
 
-SELECT * FROM INGREDIENT;
+SELECT * FROM INGREDIENT join on ;
+SELECT * from ingredient i inner join stockMovement s on s.id = i.id where s.id = 1;
+
+INSERT INTO ingredient (name, price, category) VALUES
 
 INSERT INTO INGREDIENT (name, price, category) VALUES 
 ('Laitue', 800.00,'VEGETABLE'),
