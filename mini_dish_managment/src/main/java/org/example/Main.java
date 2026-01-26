@@ -17,7 +17,7 @@ public class Main {
         Ingredient poulet = new Ingredient(3 ,"Poulet", 3000.00, CategoryEnum.ANIMAL);
         Ingredient chocolat = new Ingredient(4, "Chocolat", 3000.00, CategoryEnum.OTHER);
         Ingredient beurre = new Ingredient( 5, "Beurre", 2500.00, CategoryEnum.DAIRY);
-        Ingredient boeuf = new Ingredient(6, "Boeuf", 134.00, CategoryEnum.ANIMAL);
+        Ingredient boeuf = new Ingredient(8, "Boeuf", 150.00, CategoryEnum.ANIMAL);
         DishIngredients dishIngredients1 = new DishIngredients( 1 ,saladeFraiche, laitue, 0.20, UnitType.KG);
         DishIngredients dishIngredients2 = new DishIngredients(2,saladeFraiche, tomate, 0.15, UnitType.KG);
         DishIngredients dishIngredients3 = new DishIngredients(3, pouletGrille,poulet,1.00 , UnitType.KG);
@@ -35,7 +35,7 @@ public class Main {
         System.out.println(gateauxChocolat.getDishCost());
         System.out.println(gateauxChocolat.getMarginGross());
         Ingredient oignon  = new Ingredient(6, "Oignon",500.00, CategoryEnum.VEGETABLE);
-        Ingredient fromage = new Ingredient(7, "Fromage",1200.00,CategoryEnum.DAIRY);
+        Ingredient fromage = new Ingredient(7, "Fromage",1300.00,CategoryEnum.DAIRY);
         DishIngredients dishIngredient6 = new DishIngredients(6, saladeFraiche,oignon,0.15, UnitType.KG);
         DishIngredients dishIngredient7 = new DishIngredients(7, saladeFraiche, fromage, 0.18, UnitType.KG);
         StockValue stockValue1 = new StockValue(5.00, UnitType.KG);
@@ -74,6 +74,7 @@ public class Main {
         List<DishOrder> dishOrder = List.of(dishOrder1, dishOrder2,dishOrder3);
         order.setDishOrder(dishOrder);
         order.getTotalAmountWithoutVAT();
+        System.out.println(data.saveIngredient(fromage));
 
 
 

@@ -95,9 +95,9 @@ Connection connection;
                         DishIngredients dishIngredient = new DishIngredients();
 
                         String ingredientSQL = """
-                                SELECT di.id ,i.id as ingredientId, i.name, i.category, i.price, di.quantity_required, di.unit 
+                                SELECT di.id ,i.id as ingredientId, i.name as ingredientName, i.category as ingredientCategory, i.price, di.quantity_required, di.unit 
                                 from dishingredient di 
-                                    left join ingredient i on i.id = di.id 
+                                    left join ingredient i on i.id = di.id_ingredient
                                 where di.id_dish = ?
                                 """;
                         PreparedStatement ingredientStatement = connection.prepareStatement(ingredientSQL);
@@ -108,8 +108,8 @@ Connection connection;
                             double quantity = rsIngredient.getDouble("quantity_required");
                             UnitType unitType = UnitType.valueOf(rsIngredient.getString("unit"));
                             int ingredientId = rsIngredient.getInt("ingredientId");
-                            String ingredientName = rsIngredient.getString("name");
-                            CategoryEnum category = CategoryEnum.valueOf(rsIngredient.getString("category"));
+                            String ingredientName = rsIngredient.getString("ingredientName");
+                            CategoryEnum category = CategoryEnum.valueOf(rsIngredient.getString("ingredientCategory"));
                             double ingredientPrice = rsIngredient.getDouble("price");
 
                             ingredient.setId(ingredientId);
@@ -420,24 +420,34 @@ Connection connection;
             Ingredient ingredient = new Ingredient();
 
             String saveIngredientSQL = """
-                INSERT INTO INGREDIENT (id , name, price, category) VALUES  (?,?, ?, ?::ingredient_category)
-                ON CONFLICT (id, name, price, category)
-                DO NOTHING
+                INSERT INTO INGREDIENT (id, name, price, category) VALUES  (?,?,?,?::ingredient_category)
+                ON CONFLICT (id) DO UPDATE set name = EXCLUDED.name,
+                    price = EXCLUDED.price, category = EXCLUDED.category RETURNING id, name, price, category
                """;
 
-            PreparedStatement ps = connection.prepareStatement(saveIngredientSQL);
-            ps.setInt(1, toSave.getId());
+            PreparedStatement ps = conn.prepareStatement(saveIngredientSQL);
+
+            ps.setInt(1,toSave.getId());
             ps.setString(2, toSave.getName());
             ps.setDouble(3, toSave.getPrice());
             ps.setString(4, toSave.getCategory().name());
 
             ResultSet rs = ps.executeQuery();
             if (rs.next()){
-                System.out.println("Votre plat a été mis à jour !");
+                int idIngredient = rs.getInt("id");
+                String ingredientName = rs.getString("name");
+                double ingredientPrice = rs.getDouble("price");
+                CategoryEnum category = CategoryEnum.valueOf(rs.getString("category"));
+
+                ingredient.setId(idIngredient);
+                ingredient.setName(ingredientName);
+                ingredient.setPrice(ingredientPrice);
+                ingredient.setCategory(category);
             }
 
             conn.commit();
             conn.close();
+
             return ingredient;
         }catch (SQLException e){
             try {
@@ -447,6 +457,14 @@ Connection connection;
             }
             throw new RuntimeException(e);
         }
+
+    }
+
+    public StockMovement StockValue(List<StockMovement> stockMovement){
+        String stockValueSQL = """
+                INSERT INTO (id, id_ingredient, quantity, type, unit, creation_datetime) VALUES
+                (?, ?, ?, ?, ?, ?) ON CONFLICT (id) DO NOTHING
+                """;
 
     }
 

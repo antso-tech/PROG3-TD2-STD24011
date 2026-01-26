@@ -42,6 +42,11 @@ INSERT INTO DISH (name,dishType, price) VALUES
 SELECT * FROM INGREDIENT join on ;
 SELECT * from ingredient i inner join stockMovement s on s.id = i.id where s.id = 1;
 
+SELECT * from ingredient;
+
+ALTER TABLE ingredient ADD CONSTRAINT unique_id UNIQUE (id);
+DELETE FROM INGREDIENT WHERE id = 17;
+ALTER TABLE ingredient DROP CONSTRAINT name_unique;
 INSERT INTO ingredient (name, price, category) VALUES
 
 INSERT INTO INGREDIENT (name, price, category) VALUES 
@@ -51,7 +56,7 @@ INSERT INTO INGREDIENT (name, price, category) VALUES
 ('Chocolat', 3000.00,'OTHER'),
 ('Beurre',2500.00, 'DAIRY');
 
-
+SELECT * FROM STOCKMOVEMENT;
 CREATE TABLE StockMovement(
     id SERIAL PRIMARY KEY,
     id_ingredient int,
@@ -91,9 +96,6 @@ CREATE TABLE DISHORDER(
 )
 
 SELECT id, name, dishType, price  FROM dish where id = 1;
-
-
-;
 
 
 
