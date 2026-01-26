@@ -1,6 +1,7 @@
 package org.example;
 
 import java.sql.*;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -444,6 +445,9 @@ Connection connection;
                 ingredient.setPrice(ingredientPrice);
                 ingredient.setCategory(category);
             }
+            if (!toSave.getStockMovementList().isEmpty()){
+                saveStockMovement(toSave.getStockMovementList(), ingredient.getId());
+            }
 
             conn.commit();
             conn.close();
@@ -460,11 +464,59 @@ Connection connection;
 
     }
 
-    public StockMovement StockValue(List<StockMovement> stockMovement){
+    private List<StockMovement> saveStockMovement(List<StockMovement> stockMovements, int ingredientId){
+        Connection conn = null;
         String stockValueSQL = """
                 INSERT INTO (id, id_ingredient, quantity, type, unit, creation_datetime) VALUES
-                (?, ?, ?, ?, ?, ?) ON CONFLICT (id) DO NOTHING
+                (?, ?, ?, ?, ?, ?) ON CONFLICT (id) DO NOTHING RETURNING id, quantity,
+                    type, unit, creation_datetime
                 """;
+
+        try {
+            conn = new DBConnection().getConnection();
+            conn.setAutoCommit(false);
+            PreparedStatement ps = conn.prepareStatement(stockValueSQL);
+            List<StockMovement> stockMovementList = new ArrayList<>();
+            for (StockMovement stockMovement : stockMovements){
+                ps.setInt(1, stockMovement.id);
+                ps.setInt(2, ingredientId);
+                ps.setDouble(3, stockMovement.getValue().getValue());
+                ps.setObject(4, stockMovement.getType().name());
+                ps.setObject(5, stockMovement.getValue().getUnit());
+                Timestamp dateCreation = Timestamp.from(stockMovement.getCreationDateTime());
+                ps.setTimestamp(6, dateCreation);
+
+                ResultSet rs = ps.executeQuery();
+                while(rs.next()){
+                    StockValue stockValue = new StockValue();
+                    int idStockMovement = rs.getInt("id");
+                    double quantity = rs.getDouble("quantity");
+                    MovementTypeEnum type = MovementTypeEnum.valueOf(rs.getString("type"));
+                    UnitType unit = UnitType.valueOf(rs.getString("unit"));
+                    Timestamp creationDateTime = rs.getTimestamp("creation_datetime");
+                    Instant creationDateTimeToInstant = creationDateTime.toInstant();
+
+                    stockMovement.setId(idStockMovement);
+                    stockMovement.setType(type);
+                    stockMovement.setCreationDateTime(creationDateTimeToInstant);
+                    stockValue.setValue(quantity);
+                    stockValue.setUnit(unit);
+                    stockMovement.setValue(stockValue);
+
+                    stockMovementList.add(stockMovement);
+                }
+            }
+            conn.commit();
+            return  stockMovementList;
+
+        } catch (Exception e) {
+            try {
+                conn.rollback();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+            throw new RuntimeException(e);
+        }
 
     }
 

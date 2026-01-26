@@ -4,6 +4,11 @@ public class StockValue {
     double value;
     UnitType unit;
 
+    public StockValue() {
+
+    }
+
+
     public StockValue(double value, UnitType unit) {
         this.value = value;
         this.unit = unit;
