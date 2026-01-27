@@ -127,6 +127,8 @@ SELECT id, name, dishType, price  FROM dish where id = 1;
 
 SELECT o.id, o.reference, o.creation_datetime, d.quantity, d.id_dish from ORDERS o left join DISHORDER d on d.id_order = o.id WHERE REFERENCE = 'ORD00003';
 
+'ORD00003'
+
 
 
 

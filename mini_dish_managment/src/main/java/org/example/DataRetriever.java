@@ -563,6 +563,22 @@ Connection connection;
                 DISHORDER d ON d.id_order = o.id
                 WHERE REFERENCE = ?
                 """;
+        try{
+
+
+            PreparedStatement ps = connection.prepareStatement(findOrderReferenceSQL);
+            ps.setString(1, reference);
+            ResultSet rs = ps.executeQuery();
+
+            if (!rs.next()){
+                throw new RuntimeException("Votre commande est introuvable !");
+
+            }
+
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         try {
             PreparedStatement ps = connection.prepareStatement(findOrderReferenceSQL);
             ps.setString(1, reference);
@@ -589,10 +605,9 @@ Connection connection;
 
             }
 
+            return order;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        System.out.println(order);
-        return order;
     }
 }
