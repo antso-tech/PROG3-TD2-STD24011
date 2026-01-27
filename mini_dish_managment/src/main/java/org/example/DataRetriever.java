@@ -618,15 +618,37 @@ Connection connection;
            RETURNING reference, creation_datetime""";
 
         try {
+            Order order = new Order();
             conn = new DBConnection().getConnection();
             conn.setAutoCommit(false);
             PreparedStatement ps = conn.prepareStatement(saveOrderSQL);
 
             ps.setInt(1, toSave.getId());
+            ps.setString(2, toSave.getReference());
+            Timestamp timestampCreationDateTime = Timestamp.from(toSave.getCreationDateTime());
+            ps.setTimestamp(3, timestampCreationDateTime);
 
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()){
+                int idOrder = rs.getInt("id");
+                String reference = rs.getString("reference");
+                Timestamp dateTimeCreation = rs.getTimestamp("creation_datetime");
+                Instant dateTimeCreationInstant = dateTimeCreation.toInstant();
 
+                order.setId(idOrder);
+                order.setReference(reference);
+                order.setCreationDateTime(dateTimeCreationInstant);
+
+            }
+            System.out.println(order);
+            conn.commit();
 
         } catch (Exception e) {
+            try {
+                conn.rollback();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
             throw new RuntimeException(e);
         }
 
