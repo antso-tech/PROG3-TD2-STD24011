@@ -558,7 +558,7 @@ Connection connection;
     public Order findOrderByReference(String reference) {
         Order order = new Order();
         String findOrderReferenceSQL = """
-                SELECT o.id, o.reference, o.creation_datetime, d.quantity, d.id, d.id_dish as dishOrderId FROM
+                SELECT o.id, o.reference, o.creation_datetime, d.quantity, d.id as dishOrderId, d.id_dish FROM
                 ORDERS o left join
                 DISHORDER d ON d.id_order = o.id
                 WHERE REFERENCE = ?
