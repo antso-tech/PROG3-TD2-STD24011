@@ -445,7 +445,7 @@ Connection connection;
                 ingredient.setPrice(ingredientPrice);
                 ingredient.setCategory(category);
             }
-            if (!toSave.getStockMovementList().isEmpty()){
+            if (toSave.getStockMovementList() != null && !toSave.getStockMovementList().isEmpty()){
                 saveStockMovement(toSave.getStockMovementList(), ingredient.getId());
             }
 
@@ -464,11 +464,11 @@ Connection connection;
 
     }
 
-    private List<StockMovement> saveStockMovement(List<StockMovement> stockMovements, int ingredientId){
+    private List<StockMovement> saveStockMovement(List<StockMovement> stockMovements, int ingredientId) {
         Connection conn = null;
         String stockValueSQL = """
-                INSERT INTO (id, id_ingredient, quantity, type, unit, creation_datetime) VALUES
-                (?, ?, ?, ?, ?, ?) ON CONFLICT (id) DO NOTHING RETURNING id, quantity,
+                INSERT INTO STOCKMOVEMENT (id, id_ingredient, quantity, type, unit, creation_datetime) VALUES
+                (?, ?, ?, ?::mouvement_type, ?::unit_type, ?) ON CONFLICT (id) DO NOTHING RETURNING id, quantity,
                     type, unit, creation_datetime
                 """;
 
@@ -477,17 +477,17 @@ Connection connection;
             conn.setAutoCommit(false);
             PreparedStatement ps = conn.prepareStatement(stockValueSQL);
             List<StockMovement> stockMovementList = new ArrayList<>();
-            for (StockMovement stockMovement : stockMovements){
+            for (StockMovement stockMovement : stockMovements) {
                 ps.setInt(1, stockMovement.id);
                 ps.setInt(2, ingredientId);
                 ps.setDouble(3, stockMovement.getValue().getValue());
                 ps.setObject(4, stockMovement.getType().name());
-                ps.setObject(5, stockMovement.getValue().getUnit());
+                ps.setObject(5, stockMovement.getValue().getUnit().name());
                 Timestamp dateCreation = Timestamp.from(stockMovement.getCreationDateTime());
                 ps.setTimestamp(6, dateCreation);
 
                 ResultSet rs = ps.executeQuery();
-                while(rs.next()){
+                while (rs.next()) {
                     StockValue stockValue = new StockValue();
                     int idStockMovement = rs.getInt("id");
                     double quantity = rs.getDouble("quantity");
@@ -507,7 +507,8 @@ Connection connection;
                 }
             }
             conn.commit();
-            return  stockMovementList;
+            System.out.println(stockMovementList);
+            return stockMovementList;
 
         } catch (Exception e) {
             try {
@@ -556,6 +557,26 @@ Connection connection;
 
 
     public Order findOrderByReference(String reference) {
-        throw new RuntimeException("Not implemented");
+        String findOrderReferenceSQL = """
+                SELECT o.id, o.reference, o.creation_datetime, d.quantity FROM
+                ORDERS o left join
+                DISHORDER d ON d.id_order = o.id
+                WHERE REFERENCE = ?
+                """;
+        try {
+            PreparedStatement ps = connection.prepareStatement(findOrderReferenceSQL);
+            ps.setString(1, reference);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()){
+                int id = rs.getInt("id");
+                String orderReference = rs.getString("reference");
+                Timestamp date = rs.getTimestamp("creation_datetime");
+                Instant creationDateTime = date.toInstant();
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }

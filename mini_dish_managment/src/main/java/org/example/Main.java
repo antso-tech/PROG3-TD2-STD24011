@@ -44,18 +44,21 @@ public class Main {
         StockValue stockValue4 = new StockValue(0.15, UnitType.KG);
         StockValue stockValue5 = new StockValue(10.0, UnitType.KG);
         StockValue stockValue6 = new StockValue(1.0, UnitType.KG);
+        StockValue stockValue7 = new StockValue(1.9, UnitType.KG);
         StockMovement stockMovement1 = new StockMovement(1, MovementTypeEnum.IN,stockValue1,Instant.parse("2024-01-05T08:00:00Z"));
         StockMovement stockMovement2 = new StockMovement(2, MovementTypeEnum.OUT,stockValue2, Instant.parse("2024-01-06T12:00:00Z"));
         StockMovement stockMovement3 = new StockMovement(3, MovementTypeEnum.IN, stockValue3, Instant.parse("2024-01-05T08:00:00Z"));
         StockMovement stockMovement4 = new StockMovement(4, MovementTypeEnum.OUT, stockValue4, Instant.parse("2024-01-06T12:00:00Z"));
         StockMovement stockMovement5 = new StockMovement(5, MovementTypeEnum.IN, stockValue5, Instant.parse("2024-01-04T09:00:00Z"));
         StockMovement stockMovement6 = new StockMovement(6, MovementTypeEnum.OUT, stockValue6, Instant.parse("2024-01-06T13:00:00Z"));
+        StockMovement stockMovement7 = new StockMovement(11, MovementTypeEnum.IN, stockValue7, Instant.now());
         List<StockMovement> stockMovementLaitue = List.of(stockMovement1, stockMovement2);
         List<StockMovement> stockMovementTomate = List.of(stockMovement3, stockMovement4);
         List<StockMovement> stockMovementPoulet = List.of(stockMovement5, stockMovement6);
         laitue.setStockMovementList(stockMovementLaitue);
         tomate.setStockMovementList(stockMovementTomate);
         poulet.setStockMovementList(stockMovementPoulet);
+        fromage.setStockMovementList(List.of(stockMovement7));
         saladeFraiche.setDishIngredients(List.of(dishIngredients1, dishIngredients2, dishIngredient6, dishIngredient7));
         data.saveDish(saladeFraiche);
         data.findDishById(1);
@@ -75,6 +78,7 @@ public class Main {
         order.setDishOrder(dishOrder);
         order.getTotalAmountWithoutVAT();
         System.out.println(data.saveIngredient(fromage));
+
 
 
 

@@ -79,6 +79,15 @@ CREATE TABLE StockMovement(
 (5, 2.50, 'IN', 'KG', '2024-01-05 10:00:00'),
 (5, 0.20, 'OUT', 'KG', '2024-01-06 14:00:00');
 
+INSERT INTO ORDERS (reference, creation_datetime) VALUES
+('ORD00001', '2024-01-15 10:30:00'),
+('ORD00002', '2024-01-15 12:15:00'),
+('ORD00003', '2024-01-16 14:45:00'),
+('ORD00004', '2024-01-16 18:20:00'),
+('ORD00005', '2024-01-17 09:00:00');
+
+
+
 
 CREATE TABLE ORDERS(
     id serial primary key,
@@ -89,13 +98,34 @@ CREATE TABLE ORDERS(
 CREATE TABLE DISHORDER(
     id serial PRIMARY KEY,
     id_dish int,
-    id_ingredient int, 
+    id_order int, 
     CONSTRAINT fk_dish FOREIGN KEY (id_dish) REFERENCES DISH(id),
-    CONSTRAINT fk_ingredient FOREIGN KEY (id_ingredient) REFERENCES DISH(id),
+    CONSTRAINT fk_order FOREIGN KEY (id_order) REFERENCES ORDERS(id),
     quantity numeric(4,2)
-)
+);
+
+INSERT INTO DISHORDER (id_dish, id_order, quantity) VALUES
+(5, 15, 2.50),
+(25, 35, 1.75),
+(105, 215, 3.00),
+(45, 95, 2.25),
+(155, 305, 4.50),
+(75, 125, 1.50),
+(205, 255, 2.75),
+(35, 45, 3.25),
+(185, 195, 2.00),
+(65, 85, 1.25);
+
+SELECT * from DISHORDER;
+
+SELECT * from orders;
+
+SELECT * from dish;
+SELECT * from ingredient;
 
 SELECT id, name, dishType, price  FROM dish where id = 1;
+
+SELECT o.id, o.reference, o.creation_datetime, d.quantity from ORDERS o left join DISHORDER d on d.id_order = o.id WHERE REFERENCE = 'ORD00003';
 
 
 

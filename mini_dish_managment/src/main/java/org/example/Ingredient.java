@@ -83,6 +83,7 @@ public class Ingredient {
                 ", name='" + name + '\'' +
                 ", price=" + price +
                 ", category=" + category +
+                ", stockMovement=" + stockMovementList +
                 '}';
     }
 
