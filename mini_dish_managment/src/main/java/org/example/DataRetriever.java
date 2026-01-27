@@ -66,7 +66,7 @@ Connection connection;
         }
     }
 
-    void findDishById(int id){
+    Dish findDishById(int id){
         List<DishIngredients> dishIngredients = new ArrayList<>();
         Dish dish = new Dish();
         try {
@@ -134,8 +134,7 @@ Connection connection;
                     }
             }
             System.out.println(dish);
-
-
+            return dish;
 
         }catch (SQLException e){
             throw new RuntimeException("Erreur au niveau du serveur : " + e);
@@ -557,8 +556,9 @@ Connection connection;
 
 
     public Order findOrderByReference(String reference) {
+        Order order = new Order();
         String findOrderReferenceSQL = """
-                SELECT o.id, o.reference, o.creation_datetime, d.quantity FROM
+                SELECT o.id, o.reference, o.creation_datetime, d.quantity, d.id, d.id_dish as dishOrderId FROM
                 ORDERS o left join
                 DISHORDER d ON d.id_order = o.id
                 WHERE REFERENCE = ?
@@ -567,16 +567,32 @@ Connection connection;
             PreparedStatement ps = connection.prepareStatement(findOrderReferenceSQL);
             ps.setString(1, reference);
             ResultSet rs = ps.executeQuery();
+            List<DishOrder> dishOrders = new ArrayList<>();
             while (rs.next()){
+                DishOrder dishOrder = new DishOrder();
                 int id = rs.getInt("id");
                 String orderReference = rs.getString("reference");
                 Timestamp date = rs.getTimestamp("creation_datetime");
                 Instant creationDateTime = date.toInstant();
+                int dishOrderId = rs.getInt("dishOrderId");
+                double quantity = rs.getDouble("quantity");
+                int dishId = rs.getInt("id_dish");
+
+                order.setId(id);
+                order.setReference(orderReference);
+                order.setCreationDateTime(creationDateTime);
+                dishOrder.setQuantity(quantity);
+                dishOrder.setId(dishOrderId);
+                dishOrder.setDish(findDishById(dishId));
+                dishOrders.add(dishOrder);
+                order.setDishOrder(dishOrders);
+
             }
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
+        System.out.println(order);
+        return order;
     }
 }

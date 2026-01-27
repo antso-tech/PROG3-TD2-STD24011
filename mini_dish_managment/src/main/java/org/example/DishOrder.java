@@ -5,6 +5,10 @@ public class DishOrder {
     Dish dish;
     Double quantity;
 
+    public DishOrder() {
+
+    }
+
     public DishOrder(int id, Dish dish,Double quantity) {
         this.id = id;
         this.dish = dish;
@@ -35,5 +39,12 @@ public class DishOrder {
         this.quantity = quantity;
     }
 
-
+    @Override
+    public String toString() {
+        return "DishOrder{" +
+                "id=" + id +
+                ", dish=" + dish +
+                ", quantity=" + quantity +
+                '}';
+    }
 }

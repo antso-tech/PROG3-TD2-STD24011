@@ -78,7 +78,7 @@ public class Main {
         order.setDishOrder(dishOrder);
         order.getTotalAmountWithoutVAT();
         System.out.println(data.saveIngredient(fromage));
-
+        data.findOrderByReference("ORD00003");
 
 
 
