@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Objects;
 
 public class Order {
-    int id;
-    String reference;
-    Instant creationDateTime;
-    List<DishOrder> dishOrder;
+    private int id;
+    private String reference;
+    private Instant creationDateTime;
+    private List<DishOrder> dishOrder;
 
     public Order() {
 

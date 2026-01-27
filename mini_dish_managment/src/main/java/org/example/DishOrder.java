@@ -1,9 +1,9 @@
 package org.example;
 
 public class DishOrder {
-    int id;
-    Dish dish;
-    Double quantity;
+    private int id;
+    private Dish dish;
+    private Double quantity;
 
     public DishOrder() {
 

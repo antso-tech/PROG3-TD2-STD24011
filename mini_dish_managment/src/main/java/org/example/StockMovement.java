@@ -6,10 +6,10 @@ import java.lang.classfile.Instruction;
 import java.time.Instant;
 
 public class StockMovement {
-    int id;
-    MovementTypeEnum type;
-    StockValue value;
-    Instant creationDateTime;
+    private int id;
+    private MovementTypeEnum type;
+    private StockValue value;
+    private Instant creationDateTime;
 
     public StockMovement(int id, MovementTypeEnum type, StockValue value, Instant creationDateTime) {
         this.id = id;

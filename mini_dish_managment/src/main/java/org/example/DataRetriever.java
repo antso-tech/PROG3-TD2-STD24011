@@ -4,7 +4,6 @@ import java.sql.*;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class DataRetriever {
 DBConnection dbConnection = new DBConnection();
@@ -477,7 +476,7 @@ Connection connection;
             PreparedStatement ps = conn.prepareStatement(stockValueSQL);
             List<StockMovement> stockMovementList = new ArrayList<>();
             for (StockMovement stockMovement : stockMovements) {
-                ps.setInt(1, stockMovement.id);
+                ps.setInt(1, stockMovement.getId());
                 ps.setInt(2, ingredientId);
                 ps.setDouble(3, stockMovement.getValue().getValue());
                 ps.setObject(4, stockMovement.getType().name());
@@ -553,8 +552,6 @@ Connection connection;
 
     }
 
-
-
     public Order findOrderByReference(String reference) {
         Order order = new Order();
         String findOrderReferenceSQL = """
@@ -609,5 +606,29 @@ Connection connection;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void saveOrder(Order toSave){
+        Connection conn = null;
+        String saveOrderSQL = """
+           INSERT INTO
+           ORDERS (id, reference, creation_datetime)
+           ON CONFLICT (id) DO UPDATE
+           SET reference = EXCLUDED.REFERENCE, creation_datetime = EXCLUDED.creation_datetime
+           RETURNING reference, creation_datetime""";
+
+        try {
+            conn = new DBConnection().getConnection();
+            conn.setAutoCommit(false);
+            PreparedStatement ps = conn.prepareStatement(saveOrderSQL);
+
+            ps.setInt(1, toSave.getId());
+
+
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }

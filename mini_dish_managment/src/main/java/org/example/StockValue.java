@@ -1,13 +1,12 @@
 package org.example;
 
 public class StockValue {
-    double value;
-    UnitType unit;
+    private double value;
+    private UnitType unit;
 
     public StockValue() {
 
     }
-
 
     public StockValue(double value, UnitType unit) {
         this.value = value;
