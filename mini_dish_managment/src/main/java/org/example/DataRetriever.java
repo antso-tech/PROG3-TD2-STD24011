@@ -609,11 +609,25 @@ Connection connection;
     }
 
     public void saveOrder(Order toSave){
-        double quantityDishOrder = toSave.getDishOrder().stream().mapToDouble(DishOrder::getQuantity).sum();
-        double quantityDishIngredient = toSave.getDishOrder().stream().mapToDouble(dishOrder -> dishOrder.getDish().getDishIngredients().stream().mapToDouble(DishIngredients::getQuantity).sum()).sum();
-        double totalStock = toSave.getDishOrder().stream().mapToDouble(dishOrder -> dishOrder.getDish().getDishIngredients().stream().mapToDouble(DishIngredients::getStock).sum()).sum();
+        double quantityDishOrder= 0.0;
+        double quantityDishIngredient = 0.0;
+        double availableStock = 0.0;
 
-        double totals = quantityDishOrder * quantityDishIngredient;
+        for (DishOrder dishOrder : toSave.getDishOrder()){
+            Dish dish = dishOrder.getDish();
+            quantityDishOrder = dishOrder.getQuantity();
+
+            for (DishIngredients dishIngredient : dish.getDishIngredients()){
+                quantityDishIngredient = dishIngredient.getQuantity();
+                availableStock = dishIngredient.getStock();
+
+            }
+        }
+        double necessaryQuantity = quantityDishIngredient * quantityDishOrder;
+        if (necessaryQuantity <= availableStock){
+            throw new RuntimeException("Votre stock est insuffisant");
+
+        }
         Connection conn = null;
         String saveOrderSQL = """
            INSERT INTO
@@ -623,9 +637,7 @@ Connection connection;
            RETURNING id, reference, creation_datetime""";
 
         try {
-            if (totals <= totalStock){
-                throw new RuntimeException("Votre stock est insuffisant pour sauve");
-            }
+
             Order order = new Order();
             conn = new DBConnection().getConnection();
             conn.setAutoCommit(false);
