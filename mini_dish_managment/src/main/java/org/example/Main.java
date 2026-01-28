@@ -71,6 +71,7 @@ public class Main {
         Order order3 = new Order(3, "ORD00003", Instant.now());
         Order order4 = new Order(4, "ORD00004", Instant.now());
         Order order5 = new Order(5, "ORD00006", Instant.now());
+        Order order6 = new Order(6, "ORD00007", Instant.now());
         DishOrder dishOrder1 = new DishOrder(1, saladeFraiche, 0.5);
         DishOrder dishOrder2 = new DishOrder(2, pouletGrille, 0.10);
         DishOrder dishOrder3 = new DishOrder(3, saladeFraiche, 0.13);
@@ -78,9 +79,9 @@ public class Main {
         order.setDishOrder(dishOrder);
         order.getTotalAmountWithoutVAT();
         System.out.println(data.saveIngredient(fromage));
-        data.findOrderByReference("");
-
-
+        //data.findOrderByReference("");
+        data.saveOrder(order4);
+        data.saveOrder(order6);
 
     }
 }

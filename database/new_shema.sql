@@ -86,9 +86,7 @@ INSERT INTO ORDERS (reference, creation_datetime) VALUES
 ('ORD00004', '2024-01-16 18:20:00'),
 ('ORD00005', '2024-01-17 09:00:00');
 
-
-
-
+SELECT * FROM orders ORDER BY id;
 CREATE TABLE ORDERS(
     id serial primary key,
     reference varchar(255),

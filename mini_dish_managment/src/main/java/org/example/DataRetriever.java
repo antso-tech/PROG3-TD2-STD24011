@@ -612,10 +612,10 @@ Connection connection;
         Connection conn = null;
         String saveOrderSQL = """
            INSERT INTO
-           ORDERS (id, reference, creation_datetime)
+           ORDERS (id, reference, creation_datetime) VALUES (?,?,?)
            ON CONFLICT (id) DO UPDATE
            SET reference = EXCLUDED.REFERENCE, creation_datetime = EXCLUDED.creation_datetime
-           RETURNING reference, creation_datetime""";
+           RETURNING id, reference, creation_datetime""";
 
         try {
             Order order = new Order();
